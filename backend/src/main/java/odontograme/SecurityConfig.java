@@ -1,51 +1,71 @@
 package odontograme;
 
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
-import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
-import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
+import org.springframework.security.config.Customizer;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.provisioning.InMemoryUserDetailsManager;
+import org.springframework.security.web.SecurityFilterChain;
 
 
 /**
- * Created by immari on 11/17/2016.
+ * Updated for Spring Security 6.x
  */
 @Configuration
-@EnableGlobalMethodSecurity(prePostEnabled = true)
+@EnableMethodSecurity
 @EnableWebSecurity
-class SecurityConfig extends WebSecurityConfigurerAdapter{
+public class SecurityConfig {
 
-    /**
-     * This section defines the user accounts which can be used for authentication as well as the roles each user has.
-     *
-     * @see org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter#configure(org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder)
-     */
-    @Override
-    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-
-        auth.inMemoryAuthentication().//
-                withUser("greg").password("turnquist").roles("USER").and().//
-                withUser("ollie").password("gierke").roles("USER", "ADMIN");
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
     }
 
     /**
-     * This section defines the security policy for the app.
-     *
-     * BASIC authentication is supported
-     * @param http
-     * @throws Exception
-     * @see org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter#configure(org.springframework.security.config.annotation.web.builders.HttpSecurity)
+     * Modern approach to define user accounts using UserDetailsService bean.
      */
-    @Override
-    protected void configure(HttpSecurity http) throws Exception {
+    @Bean
+    public UserDetailsService userDetailsService(PasswordEncoder encoder) {
+        UserDetails user = User.builder()
+                .username("greg")
+                .password(encoder.encode("turnquist"))
+                .roles("USER")
+                .build();
 
-        http.httpBasic().and().authorizeRequests().//
-                antMatchers(HttpMethod.GET, "/patients").hasRole("USER").//
-                antMatchers(HttpMethod.POST, "/patients").hasRole("ADMIN").//
-                antMatchers(HttpMethod.PUT, "/patients/**").hasRole("ADMIN").//
-                antMatchers(HttpMethod.PATCH, "/patients/**").hasRole("ADMIN").and().//
-                csrf().disable();
+        UserDetails admin = User.builder()
+                .username("ollie")
+                .password(encoder.encode("gierke"))
+                .roles("USER", "ADMIN")
+                .build();
+
+        return new InMemoryUserDetailsManager(user, admin);
+    }
+
+    /**
+     * Modern security policy definition using SecurityFilterChain bean.
+     */
+    @Bean
+    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+        http
+            .httpBasic(Customizer.withDefaults())
+            .authorizeHttpRequests(auth -> auth
+                .requestMatchers(HttpMethod.GET, "/patients").hasRole("USER")
+                .requestMatchers(HttpMethod.POST, "/patients").hasRole("ADMIN")
+                .requestMatchers(HttpMethod.PUT, "/patients/**").hasRole("ADMIN")
+                .requestMatchers(HttpMethod.PATCH, "/patients/**").hasRole("ADMIN")
+                .anyRequest().authenticated()
+            )
+            .csrf(AbstractHttpConfigurer::disable);
+
+        return http.build();
     }
 }

@@ -1,6 +1,5 @@
 package odontograme.rest;
 
-import odontograme.patientrecords.Patient;
 import odontograme.patientrecords.Practice;
 import odontograme.repository.PracticeRepository;
 import odontograme.viewmodel.patientrecordview.PracticeRest;
@@ -21,35 +20,23 @@ public class PracticeController {
 
     @RequestMapping(value = "/patient/{patientId}/practices", method = RequestMethod.GET)
     Page<Practice> getPractices(Pageable pageable, @PathVariable String patientId) {
-
-        Page<Practice> practices = practiceRepository.findByPatientId(patientId, pageable);
-
-        return practices;
+        return practiceRepository.findByPatientId(patientId, pageable);
     }
 
     @RequestMapping(value = "/patient/{patientId}/practice", method = RequestMethod.POST)
     ResponseEntity<?> addPractice(@PathVariable String patientId, @RequestBody PracticeRest input) {
 
         Practice practice = input.getPractice();
-
-        ResponseEntity responseEntity = ResponseEntity.noContent().build();
-
         Practice saved_practice = practiceRepository.save(practice);
 
         if (saved_practice != null) {
-
             URI location = ServletUriComponentsBuilder
                     .fromCurrentRequest().path("/{id}")
                     .buildAndExpand(saved_practice.getId()).toUri();
-            responseEntity = ResponseEntity.created(location).build();
+            return ResponseEntity.created(location).build();
+        } else {
+            return ResponseEntity.notFound().build();
         }
-        else
-        {
-            responseEntity = ResponseEntity.notFound().build();
-        }
-
-        return responseEntity;
-
     }
 
     public void setPracticeRepository(PracticeRepository practiceRepository) {
