@@ -3,10 +3,13 @@ package odontograme.repository;
 import odontograme.bookkeeping.Charge;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.repository.PagingAndSortingRepository;
+import org.springframework.data.mongodb.repository.MongoRepository;
+import org.springframework.stereotype.Repository;
+
 import java.util.Optional;
 
-public interface ChargeRepository extends PagingAndSortingRepository<Charge, String> {
+@Repository
+public interface ChargeRepository extends MongoRepository<Charge, String> {
     Optional<Charge> findById(String id);
     Page<Charge> findByPatientId(String id, Pageable p);
     Iterable<Charge> findByPatientId(String id);

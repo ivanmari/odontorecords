@@ -3,14 +3,13 @@ package odontograme.repository;
 import odontograme.patientrecords.Practice;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.repository.PagingAndSortingRepository;
+import org.springframework.data.mongodb.repository.MongoRepository;
+import org.springframework.stereotype.Repository;
 
-/**
- * Created by immari on 2/4/2017.
- */
-public interface PracticeRepository extends PagingAndSortingRepository<Practice, String> {
-    Practice findById(int id);
+import java.util.Optional;
+
+@Repository
+public interface PracticeRepository extends MongoRepository<Practice, String> {
+    Optional<Practice> findById(String id);
     Page<Practice> findByPatientId(String id, Pageable p);
-    
 }
-

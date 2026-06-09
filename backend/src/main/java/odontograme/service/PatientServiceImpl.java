@@ -6,11 +6,11 @@ import odontograme.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 import java.util.Optional;
 
-@Component
+@Service
 public class PatientServiceImpl implements PatientService {
     @Autowired
     private PatientRepository patientRepository;
@@ -38,9 +38,10 @@ public class PatientServiceImpl implements PatientService {
 
     @Override
     public Optional<Patient> findByPatientId(String id) {
-        Patient patient = patientRepository.findById(id);
-        patient.setAccount(accountService);
-        return Optional.of(patient);
+        return patientRepository.findById(id).map(patient -> {
+            patient.setAccount(accountService);
+            return patient;
+        });
     }
 
     @Override
@@ -50,9 +51,9 @@ public class PatientServiceImpl implements PatientService {
 
     @Override
     public void deletePatientById(String id) throws PatientIdNotFoundException {
-        if(patientRepository.exists(id))
+        if(patientRepository.existsById(id))
         {
-            patientRepository.delete(id);
+            patientRepository.deleteById(id);
         }
         else
         {
@@ -62,9 +63,12 @@ public class PatientServiceImpl implements PatientService {
 
     @Override
     public void updatePatient(Optional<Patient> patient) {
-
-        patientRepository.save(patient
-                        .filter(p -> patientRepository.exists(p.getId()))
-                        .orElseThrow(PatientIdNotFoundException::new));
+        patient.ifPresent(p -> {
+            if (patientRepository.existsById(p.getId())) {
+                patientRepository.save(p);
+            } else {
+                throw new PatientIdNotFoundException();
+            }
+        });
     }
 }

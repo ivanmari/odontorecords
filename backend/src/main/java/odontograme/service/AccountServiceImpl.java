@@ -10,22 +10,21 @@ import odontograme.repository.InstallmentRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 import java.util.Optional;
 
 /**
- * Created by immari on 10/2/2016.
+ * Updated for Spring Boot 3.x
  */
-@Component
+@Service
 public class AccountServiceImpl implements AccountService {
 
-    private ChargeRepository chargeRepository;
-    private InstallmentRepository installmentRepository;
+    private final ChargeRepository chargeRepository;
+    private final InstallmentRepository installmentRepository;
 
     @Autowired
     public AccountServiceImpl(ChargeRepository chargeRepository, InstallmentRepository installmentRepository) {
-
         this.chargeRepository = chargeRepository;
         this.installmentRepository = installmentRepository;
     }
@@ -58,18 +57,18 @@ public class AccountServiceImpl implements AccountService {
     @Override
     public void removeCharge(Optional<Charge> charge) throws InstallmentPresentException {
         try {
-            Iterable<Installment> installments = installmentRepository.findByChargeId(charge.orElseThrow(ChargeIdNotFoundException::new).getId().toString());
+            Charge c = charge.orElseThrow(ChargeIdNotFoundException::new);
+            Iterable<Installment> installments = installmentRepository.findByChargeId(c.getId().toString());
             if (installments.iterator().hasNext()) {
                 throw new InstallmentPresentException();
             } else {
-                chargeRepository.delete(charge.orElseThrow(ChargeIdNotFoundException::new));
+                chargeRepository.delete(c);
             }
         }
         catch(ChargeIdNotFoundException e)
         {
             //Charge not found, do nothing
         }
-
     }
 
     @Override
