@@ -1,6 +1,7 @@
 package odontograme.patientrecords.odontogram;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.security.InvalidKeyException;
 import java.util.Map;
@@ -54,11 +55,10 @@ public class MouthTests {
         }
     }
 
-    @Test(expected = InvalidKeyException.class)
-    public void invalidToothIdThrows() throws InvalidKeyException{
-
+    @Test
+    public void invalidToothIdThrows() {
         Mouth mouth = new Mouth();
-        mouth.getTooth(0, 1);
+        assertThrows(InvalidKeyException.class, () -> mouth.getTooth(0, 1));
     }
 
     @Test

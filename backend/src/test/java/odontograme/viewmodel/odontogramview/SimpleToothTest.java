@@ -4,8 +4,8 @@ import odontograme.patientrecords.Practice;
 import odontograme.patientrecords.odontogram.Tooth;
 import odontograme.socialsecurity.PracticeCodeRow;
 import odontograme.socialsecurity.PracticeCodeTable;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.time.Duration;
@@ -36,7 +36,7 @@ public class SimpleToothTest {
     @Autowired
     private PracticeCodeTable practiceCodeTable;
 
-    @Before
+    @BeforeEach
     public void setup(){
 
         this.practiceCodeTable = new PracticeCodeTable();
