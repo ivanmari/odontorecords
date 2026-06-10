@@ -44,7 +44,6 @@ public class Patient {
     private List<String> mouthSnapshot;
 
 
-    @Autowired
     public Patient(AccountService accountService, PracticeService practiceService) {
         this.id = new ObjectId();
 
@@ -54,7 +53,6 @@ public class Patient {
         address = new Address();
     }
 
-    @Autowired
     public Patient(ObjectId id, AccountService accountService) {
         this.id = id;
 

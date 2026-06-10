@@ -81,10 +81,10 @@ public class BillingController {
         return responseEntity;
     }
 
-    @RequestMapping(value = "/patient/{id}/balance", method = RequestMethod.GET)
+    @RequestMapping(value = "/patient/{patientId}/balance", method = RequestMethod.GET)
     public AccountStat getPatientBalance(@PathVariable String patientId) {
 
-        int balance = patientService.findByPatientId(patientId).orElseThrow(PatientIdNotFoundException::new).getAccountBalance();;
+        int balance = patientService.findByPatientId(patientId).orElseThrow(PatientIdNotFoundException::new).getAccountBalance();
 
         return new AccountStat(balance);
     }

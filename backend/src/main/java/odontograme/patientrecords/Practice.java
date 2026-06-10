@@ -223,7 +223,7 @@ public class Practice {
 
     //TODO Take into account that a Bridge has more than one piece affected, so this should return a list
     public Optional<String> getToothName() {
-        Optional toothName = Optional.empty();
+        Optional<String> toothName = Optional.empty();
         Pattern pattern = Pattern.compile("^\\d\\d");
         Matcher matcher = pattern.matcher(this.affectedPieces);
         if (matcher.find())
