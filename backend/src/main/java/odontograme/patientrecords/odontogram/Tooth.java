@@ -100,10 +100,16 @@ public class Tooth {
     private int quadrant;
     private int order;
     private List<ToothFace> faces;
+    private java.util.List<odontograme.patientrecords.Disease> diseases;
+    private java.util.List<odontograme.patientrecords.Practice> practices;
+    private java.util.Map<ToothFaceName, java.util.List<odontograme.patientrecords.Practice>> facePractices;
     private ToothStatus status;
 
     public Tooth(){
         faces = new ArrayList<>();
+        this.diseases = new java.util.ArrayList<>();
+        this.practices = new java.util.ArrayList<>();
+        this.facePractices = new java.util.EnumMap<>(ToothFaceName.class);
     }
 
     public Tooth(int quadrant, int order) {
@@ -112,8 +118,12 @@ public class Tooth {
         this.order = order;
 
         faces = new ArrayList<>();
+        this.diseases = new java.util.ArrayList<>();
+        this.practices = new java.util.ArrayList<>();
+        this.facePractices = new java.util.EnumMap<>(ToothFaceName.class);
         for(ToothFaceName faceName : ToothFaceName.values() ){
             faces.add(new ToothFace(faceName));
+            this.facePractices.put(faceName, new java.util.ArrayList<>());
         }
 
         status = ToothStatus.Healthy;
@@ -137,6 +147,47 @@ public class Tooth {
 
         throw new IndexOutOfBoundsException();
 
+    }
+
+    public void addDisease(odontograme.patientrecords.Disease disease){
+        this.diseases.add(disease);
+    }
+
+    public java.util.List<odontograme.patientrecords.Disease> getDiseases(){
+        return this.diseases;
+    }
+
+    public void addPractice(odontograme.patientrecords.Practice practice){
+        this.practices.add(practice);
+    }
+
+    public void addPractice(ToothFaceName faceName, odontograme.patientrecords.Practice practice){
+        java.util.List<odontograme.patientrecords.Practice> list = this.facePractices.get(faceName);
+        if(list == null){
+            list = new java.util.ArrayList<>();
+            this.facePractices.put(faceName, list);
+        }
+        list.add(practice);
+    }
+
+    public java.util.List<odontograme.patientrecords.Practice> getPractices(){
+        return this.practices;
+    }
+
+    public java.util.List<odontograme.patientrecords.Practice> getPractices(java.time.Instant from){
+        java.util.List<odontograme.patientrecords.Practice> filtered = new java.util.ArrayList<>();
+        for(odontograme.patientrecords.Practice p : this.practices){
+            if(p.getDeliveryDate()!=null && !p.getDeliveryDate().isBefore(from)){
+                filtered.add(p);
+            }
+        }
+        filtered.sort((a,b)->b.getDeliveryDate().compareTo(a.getDeliveryDate()));
+        return filtered;
+    }
+
+    public java.util.List<odontograme.patientrecords.Practice> getPractices(ToothFaceName faceName){
+        java.util.List<odontograme.patientrecords.Practice> list = this.facePractices.get(faceName);
+        return list == null ? new java.util.ArrayList<>() : list;
     }
 
     public List<ToothFace> getFaces() {
