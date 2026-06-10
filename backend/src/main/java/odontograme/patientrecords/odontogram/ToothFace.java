@@ -7,10 +7,12 @@ public class ToothFace {
 
     private Tooth.ToothFaceName faceName;
     private boolean filled;
+    private java.util.List<odontograme.patientrecords.Disease> diseases;
 
     public ToothFace(Tooth.ToothFaceName faceName) {
         this.faceName = faceName;
         this.filled = false;
+        this.diseases = new java.util.ArrayList<>();
     }
 
     public Tooth.ToothFaceName getFaceName(){
@@ -28,5 +30,13 @@ public class ToothFace {
 
     public boolean isFilled() {
         return filled;
+    }
+
+    public void addDisease(odontograme.patientrecords.Disease disease){
+        this.diseases.add(disease);
+    }
+
+    public java.util.List<odontograme.patientrecords.Disease> getDiseases(){
+        return this.diseases;
     }
 }
