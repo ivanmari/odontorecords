@@ -8,7 +8,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 
-//Representacion de bajo nivel del estado de un objeto Mouth, mas relacionado con el repositorio que con el modelo
+//This class represents the current state of a Mouth object, after each practice was applied to each tooth. This will be used later as view model for the front end, and will be stored in the database as a snapshot of the mouth after each practice was applied. 
 public class MouthSnapshot {
 
     /*Takes an encoded string with teeth status
