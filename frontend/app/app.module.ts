@@ -14,6 +14,10 @@ import { MatInputModule } from '@angular/material/input';
 import { MatListModule } from '@angular/material/list';
 import { MatToolbarModule } from '@angular/material/toolbar';
 
+import { PatientService } from './patient.service';
+import { PostService } from './postservice.service';
+import { HttpBasicAuth } from './http-basic-auth.component';
+
 // Layout Directives
 @Directive({
   selector: '[layout]'
@@ -62,6 +66,11 @@ export class FlexDirective {
     Mouth,
     FlexDirective,
     LayoutDirective
+  ],
+  providers: [
+    PatientService,
+    PostService,
+    HttpBasicAuth
   ],
   bootstrap: [AppComponent]
 })
