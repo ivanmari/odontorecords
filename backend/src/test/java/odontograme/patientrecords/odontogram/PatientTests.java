@@ -6,7 +6,7 @@ import odontograme.patientrecords.PatientBuilder;
 import odontograme.patientrecords.personaldata.Address;
 import odontograme.service.AccountService;
 import odontograme.service.PracticeService;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 

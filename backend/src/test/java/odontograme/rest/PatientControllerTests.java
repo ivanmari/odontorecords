@@ -16,15 +16,15 @@ import odontograme.socialsecurity.PracticeCodeRow;
 import odontograme.socialsecurity.PracticeCodeTable;
 import odontograme.viewmodel.patientrecordview.PatientFullInfo;
 import org.bson.types.ObjectId;
-import org.junit.Before;
-import org.junit.Ignore;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.web.context.WebApplicationContext;
@@ -48,10 +48,10 @@ import static org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppC
  * Created by immari on 11/9/2016.
  */
 @ContextConfiguration
-@RunWith(SpringJUnit4ClassRunner.class)
+@ExtendWith(SpringExtension.class)
 @SpringBootTest
 @WebAppConfiguration
-@Ignore
+@Disabled
 public class PatientControllerTests {
 
 
@@ -79,8 +79,8 @@ public class PatientControllerTests {
     private AccountService accountService = new AccountServiceMock();
     private PracticeService practiceService = new PracticeServicesMock();
 
-    @Before
-    public void setup() throws Exception {
+        @BeforeEach
+        public void setup() throws Exception {
         this.mockMvc = webAppContextSetup(webApplicationContext).build();
         this.patientRepository.deleteAll();
         this.practiceCodesRepository.deleteAll();
@@ -168,7 +168,7 @@ public class PatientControllerTests {
         System.out.println(output);
     }
 
-    @Ignore
+        @Disabled
     @Test
     public void readGraphicMouth() throws Exception {
 
@@ -396,7 +396,7 @@ public class PatientControllerTests {
                .andExpect(jsonPath("$.balance", is(-200)));
     }
 
-    @Ignore
+        @Disabled
     @Test
     public void canAddPracticeToFace() throws Exception {
 

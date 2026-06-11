@@ -2,7 +2,7 @@ package odontograme.patientrecords.odontogram;
 
 import odontograme.patientrecords.Disease;
 import odontograme.patientrecords.Practice;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.time.Instant;
 import java.util.List;

@@ -5,7 +5,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Created by immari on 10/2/2016.
+ * This class represents the mouth of a patient, with all its teeth, gums, tongue and lips. It is the main class of the odontogram package. It will not be used as the main model for the front end, as we have MouthSnapshot for that. 
+ * It will be used as the main model for the database. This way we can have a full history of the mouth state over time, and so we could undo practices if neded.
  */
 public class Mouth {
     private Map<Integer, Tooth> permanentTeeth;

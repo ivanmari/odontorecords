@@ -8,7 +8,6 @@ import odontograme.bookkeeping.exceptions.InstallmentIdNotFoundException;
 import odontograme.patientrecords.odontogram.Mouth;
 import odontograme.patientrecords.personaldata.Address;
 import odontograme.service.PracticeService;
-import odontograme.service.PracticeServiceImpl;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.annotation.Id;

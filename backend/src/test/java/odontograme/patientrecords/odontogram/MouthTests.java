@@ -1,6 +1,7 @@
 package odontograme.patientrecords.odontogram;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.security.InvalidKeyException;
 import java.util.Map;
@@ -15,89 +16,49 @@ public class MouthTests {
     @Test
     public void canGetAllPermanentTeeth() {
         Mouth mouth = new Mouth();
-        try {
-            Tooth centralIncisive_supDer = mouth.getTooth(1,1);
-            Tooth lateralIncisive_supDer = mouth.getTooth(1,2);
-            Tooth canine_supDer = mouth.getTooth(1,3);
-            Tooth premol1_supDer = mouth.getTooth(1,4);
-            Tooth premol2_supDer = mouth.getTooth(1,5);
-            Tooth molar1_supDer = mouth.getTooth(1,6);
-            Tooth molar2_supDer = mouth.getTooth(1,7);
-            Tooth molar3_supDer = mouth.getTooth(1,8);
-
-            Tooth centralIncisive_supIz = mouth.getTooth(2,1);
-            Tooth lateralIncisive_supIz = mouth.getTooth(2,2);
-            Tooth canine_supIz = mouth.getTooth(2,3);
-            Tooth premol1_supIz = mouth.getTooth(2,4);
-            Tooth premol2_supIz = mouth.getTooth(2,5);
-            Tooth molar1_supIz = mouth.getTooth(2,6);
-            Tooth molar2_supIz = mouth.getTooth(2,7);
-            Tooth molar3_supIz = mouth.getTooth(2,8);
-
-            Tooth centralIncisive_infIz = mouth.getTooth(3,1);
-            Tooth lateralIncisive_infIz = mouth.getTooth(3,2);
-            Tooth canine_infIz = mouth.getTooth(3,3);
-            Tooth premol1_infIz = mouth.getTooth(3,4);
-            Tooth premol2_infIz = mouth.getTooth(3,5);
-            Tooth molar1_infIz = mouth.getTooth(3,6);
-            Tooth molar2_infIz = mouth.getTooth(3,7);
-            Tooth molar3_infIz = mouth.getTooth(3,8);
-
-            Tooth centralIncisive_infDer = mouth.getTooth(3,1);
-            Tooth lateralIncisive_infDer = mouth.getTooth(3,2);
-            Tooth canine_infDer = mouth.getTooth(3,3);
-            Tooth premol1_infDer = mouth.getTooth(3,4);
-            Tooth premol2_infDer = mouth.getTooth(3,5);
-            Tooth molar1_infDer = mouth.getTooth(3,6);
-            Tooth molar2_infDer = mouth.getTooth(3,7);
-            Tooth molar3_infDer = mouth.getTooth(3,8);
-
-
-        } catch (InvalidKeyException ex) {
-            assertThat(false);
+        for (int quad = 1; quad <= 4; ++quad) {
+            for (int order = 1; order <= 8; ++order) {
+                try {
+                    assertThat(mouth.getTooth(quad, order)).isNotNull();
+                } catch (InvalidKeyException ex) {
+                    // should not happen
+                    assertThat(false);
+                }
+            }
         }
     }
 
-//    @Test
-//    public void newMouthHasAllPermanentTeethPresent() {
-//        try {
-//            Mouth mouth = new Mouth();
-//
-//            for(int i = 1; i <= 4; ++i) {
-//                for(int j = 1; i <= 8; ++j){
-//                    Tooth tooth = mouth.getTooth(i, j);
-//                    assertThat(tooth.getStatus()).isEqualTo(Tooth.ToothStatus.Present);
-//                }
-//
-//            }
-//        } catch (InvalidKeyException ex) {
-//            assertThat(false);
-//        }
-//    }
-
-
-//    public void newMouthHasAllTemporaryTeethPresent() {
-//        try {
-//            Mouth mouth = new Mouth();
-//
-//            for(int i = 5; i <= 8; ++i) {
-//                for(int j = 1; i <= 8; ++j){
-//                    Tooth tooth = mouth.getTooth(i, j);
-//                    assertThat(tooth.getStatus()).isEqualTo(Tooth.ToothStatus.Present);
-//                }
-//
-//            }
-//        } catch (InvalidKeyException ex) {
-//            assertThat(false);
-//        }
-//    }
-
-    @Test(expected = InvalidKeyException.class)
-    public void invalidToothIdThrows() throws InvalidKeyException{
-
+    @Test
+    public void newMouthHasAllPermanentTeethPresent() throws InvalidKeyException {
         Mouth mouth = new Mouth();
 
-        Tooth invalidTooth = mouth.getTooth(0, 1);
+        for(int i = 1; i <= 4; ++i) {
+            for(int j = 1; j <= 8; ++j){
+                Tooth tooth = mouth.getTooth(i, j);
+                assertThat(tooth.getStatus()).isEqualTo(Tooth.ToothStatus.Healthy);
+            }
+
+        }
+    }
+
+
+    @Test
+    public void newMouthHasAllTemporaryTeethPresent() throws InvalidKeyException {
+        Mouth mouth = new Mouth();
+
+        for(int i = 5; i <= 8; ++i) {
+            for(int j = 1; j <= 5; ++j){
+                Tooth tooth = mouth.getTooth(i, j);
+                assertThat(tooth.getStatus()).isEqualTo(Tooth.ToothStatus.Healthy);
+            }
+
+        }
+    }
+
+    @Test
+    public void invalidToothIdThrows() {
+        Mouth mouth = new Mouth();
+        assertThrows(InvalidKeyException.class, () -> mouth.getTooth(0, 1));
     }
 
     @Test
