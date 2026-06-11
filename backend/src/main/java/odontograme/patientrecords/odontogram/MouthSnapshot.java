@@ -1,14 +1,13 @@
 package odontograme.patientrecords.odontogram;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 
-//This class represents the current state of a Mouth object, after each practice was applied to each tooth. This will be used later as view model for the front end, and will be stored in the database as a snapshot of the mouth after each practice was applied. 
+
+//Represents the current status of the mouth at a particular point in time. After practices were executed and Statuses forced on the teeth. It is used to create the view of the odontogram.
 public class MouthSnapshot {
 
     /*Takes an encoded string with teeth status
@@ -36,6 +35,7 @@ public class MouthSnapshot {
     * Tooth# 11 Healthy: 11H
     * Tooth# 34 Implant: 34I
     * Tooth# 41-44 Bridge: 41BS,42BI,43BI,44BE
+    * where BS means Bridge Start, BI means Bridge Intermediate and BE means Bridge End
     *
     * */
     public MouthSnapshot(Iterable<String> encodedStatusList)

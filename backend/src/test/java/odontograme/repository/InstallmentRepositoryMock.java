@@ -63,6 +63,9 @@ public class InstallmentRepositoryMock implements InstallmentRepository {
 
     @Override
     public <S extends Installment> S save(S entity) {
+        if (entity.getPatientId() == null) {
+            entity.setPatientId("1982");
+        }
         store.removeIf(i -> i.getId().equals(entity.getId()));
         store.add(entity);
         return entity;

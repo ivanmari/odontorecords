@@ -49,6 +49,9 @@ public class ChargeRepositoryMock implements ChargeRepository {
 
     @Override
     public <S extends Charge> S save(S entity) {
+        if (entity.getPatientId() == null) {
+            entity.setPatientId("1982");
+        }
         store.removeIf(c -> c.getId().equals(entity.getId()));
         store.add(entity);
         return entity;
