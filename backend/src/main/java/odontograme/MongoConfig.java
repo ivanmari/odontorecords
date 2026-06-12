@@ -29,6 +29,7 @@ public class MongoConfig extends AbstractMongoClientConfiguration {
             password = "";
         }
         String connectionString = "mongodb://ivanmari_db_user:" + password + "@ac-o3xoy7i-shard-00-00.uixnd5r.mongodb.net:27017,ac-o3xoy7i-shard-00-01.uixnd5r.mongodb.net:27017,ac-o3xoy7i-shard-00-02.uixnd5r.mongodb.net:27017/?ssl=true&replicaSet=atlas-eppj7b-shard-0&authSource=admin&appName=Odontorecords";
+        System.out.println("Using connection string: " + connectionString.replace(password, "XXXXX"));
 
         ServerApi serverApi = ServerApi.builder()
                 .version(ServerApiVersion.V1)
