@@ -2,12 +2,18 @@ package odontograme.patientrecords.odontogram;
 
 import java.security.InvalidKeyException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
-/**
- * This class represents the mouth of a patient, with all its teeth, gums, tongue and lips. It is the main class of the odontogram package. It will not be used as the main model for the front end, as we have MouthSnapshot for that. 
- * It will be used as the main model for the database. This way we can have a full history of the mouth state over time, and so we could undo practices if neded.
- */
+import odontograme.patientrecords.Practice;
+
+ /**
+  * This class represents the mouth of a patient, with all its teeth, gums, tongue and lips. It is the main class of the odontogram package. It will not be used as the main model for the front end, as we have MouthSnapshot for that. 
+  * It will be used as the main model for the database. This way we can have a full history of the mouth state over time, and so we could undo practices if neded.
+  */
+
 public class Mouth {
     private Map<Integer, Tooth> permanentTeeth;
     private Map<Integer, Tooth> temporaryTeeth;
@@ -119,7 +125,7 @@ public class Mouth {
     }
 
 
-/*    *//*Returns the practices done on permanent and temporary teeth*//*
+//Returns the practices done on permanent and temporary teeth*//*
     public List< Map<Tooth.ToothFaceName, Practice> > getPractices(){
         List<Practice> permanentPractices = permanentTeeth.entrySet().stream()
                 .filter(mapEntry -> !mapEntry.getValue().getConsolidatedPractices().isEmpty())
@@ -134,7 +140,7 @@ public class Mouth {
                 .collect(Collectors.toList());
 
         return Stream.concat(permanentPractices.stream(), temporaryPractices.stream()).collect(Collectors.toList());
-    }*/
+    }
 
     public Map<Integer, Tooth> getPermanentTeeth() {
         return permanentTeeth;
