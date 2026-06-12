@@ -6,6 +6,8 @@ import com.mongodb.ServerApi;
 import com.mongodb.ServerApiVersion;
 import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoClients;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.mongodb.config.AbstractMongoClientConfiguration;
 import org.springframework.data.mongodb.repository.config.EnableMongoRepositories;
@@ -28,8 +30,13 @@ public class MongoConfig extends AbstractMongoClientConfiguration {
         if (password == null) {
             password = "";
         }
-        String connectionString = "mongodb://ivanmari_db_user:" + password + "@ac-o3xoy7i-shard-00-00.uixnd5r.mongodb.net:27017,ac-o3xoy7i-shard-00-01.uixnd5r.mongodb.net:27017,ac-o3xoy7i-shard-00-02.uixnd5r.mongodb.net:27017/?ssl=true&replicaSet=atlas-eppj7b-shard-0&authSource=admin&appName=Odontorecords";
-        System.out.println("Using connection string: " + connectionString.replace(password, "XXXXX"));
+        String encodedPassword;
+        try {
+            encodedPassword = URLEncoder.encode(password, StandardCharsets.UTF_8.name());
+        } catch (Exception e) {
+            encodedPassword = password;
+        }
+        String connectionString = "mongodb://ivanmari_db_user:" + encodedPassword + "@ac-o3xoy7i-shard-00-00.uixnd5r.mongodb.net:27017,ac-o3xoy7i-shard-00-01.uixnd5r.mongodb.net:27017,ac-o3xoy7i-shard-00-02.uixnd5r.mongodb.net:27017/?ssl=true&replicaSet=atlas-eppj7b-shard-0&authSource=admin&appName=Odontorecords";
 
         ServerApi serverApi = ServerApi.builder()
                 .version(ServerApiVersion.V1)
