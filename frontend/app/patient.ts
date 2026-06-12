@@ -1,6 +1,7 @@
 export class Patient
 {
 	id         : string;
+	dni        : number;
 	firstName  : string;
 	lastName   : string;
 	city       : string;
