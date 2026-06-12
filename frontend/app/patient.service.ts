@@ -30,13 +30,15 @@ export class PatientService {
 
   public getAllPatients(): Observable<PatientBasicInfo[]> {
     console.log("Getting all patients");
-    return this.http.get<PatientBasicInfo[]>(this.baseUrl + this.patientsUrl, { headers: this.getHeaders() });
+    return this.http.get<any>(this.baseUrl + this.patientsUrl, { headers: this.getHeaders() })
+      .pipe(map(res => res.content));
   }
 
   public getPatients(lastName: string): Observable<PatientBasicInfo[]> {
     console.log("Getting patients with surname " + lastName);
     const params = new HttpParams().set('name', lastName);
-    return this.http.get<PatientBasicInfo[]>(this.baseUrl + this.patientUrl, { headers: this.getHeaders(), params });
+    return this.http.get<any>(this.baseUrl + this.patientUrl, { headers: this.getHeaders(), params })
+      .pipe(map(res => res.content));
   }
 
   public getPatient(id: string): Observable<Patient> {

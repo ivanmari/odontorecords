@@ -13,6 +13,7 @@ public interface PatientRepository extends MongoRepository<Patient, String> {
 
     Page<Patient> findByFirstName(String firstName, Pageable pageable);
     Page<Patient> findByLastNameLike(String lastName, Pageable pageable);
+    Page<Patient> findByFirstNameContainingIgnoreCaseOrLastNameContainingIgnoreCase(String firstName, String lastName, Pageable pageable);
     Optional<Patient> findById(String id);
 
 }
