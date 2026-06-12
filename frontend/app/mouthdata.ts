@@ -1,14 +1,13 @@
-
 export class ToothFace
 {
 	name: string;
-    color: string;
+	color: string;
 }
 
 export class Tooth
 {
 	toothNumber: number;
-    faces: ToothFace[];
+	faces: ToothFace[];
 }
 
 export class MouthData
@@ -16,3 +15,4 @@ export class MouthData
 	temporaryTeeth: Map<number, Tooth>;
 	permanentTeeth: Map<number, Tooth>;
 }
+

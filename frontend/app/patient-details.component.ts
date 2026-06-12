@@ -3,7 +3,7 @@ import { FormsModule } from '@angular/forms';
 import { Patient } from './patient'
 import { PatientService } from './patient.service'
 import { PatientBasicInfo } from './patientbasic'
-import { Response } from '@angular/http';
+// removed deprecated @angular/http import
 import { Mouth } from './mouth.component'
 
 @Component({

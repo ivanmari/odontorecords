@@ -89,7 +89,7 @@ export class ToothDetails implements OnChanges{
 	//TODO Cargar mapa de cara a vector de practicas
 	faces = ["Mesial", "Distal", "Lingual", "Vestibular", "Oclusal"];
 	
-	toothPractices: Map<string, Practice[]>;
+	toothPractices: { [face: string]: Practice[] };
 
 	isUpdate: boolean = true;
 	selectedPractice: Practice;

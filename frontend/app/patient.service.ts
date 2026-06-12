@@ -83,6 +83,11 @@ export class PatientService {
       .pipe(catchError(this.handleError));
   }
 
+  public getToothPractices(patientId: string, tooth: number): Observable<{[face: string]: Practice[]}> {
+    return this.http.get<{[face: string]: Practice[]}>(this.baseUrl + this.patientUrl + "/" + patientId + "/" + tooth + "/practices", { headers: this.getHeaders() })
+      .pipe(catchError(this.handleError));
+  }
+
   public updatePatient(patient: Patient): Observable<boolean> {
     console.log("Updating patient:", patient);
     return this.http.put(this.baseUrl + this.patientUrl, patient, { headers: this.getHeaders(), observe: 'response' })
