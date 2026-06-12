@@ -5,7 +5,7 @@ import { PatientSelect } from './patient-select.component'
 
 
 @Component({
-  selector: 'my-app',
+  selector: 'app-root',
   
   template: `
   <mat-toolbar color="primary">
