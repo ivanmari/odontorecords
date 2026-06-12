@@ -1,4 +1,4 @@
-import { Component,EventEmitter	 } from '@angular/core';
+import { Component, EventEmitter, Input, OnChanges, SimpleChanges } from '@angular/core';
 import { OnInit } from '@angular/core';
 
 import { PatientDetails } from './patient-details.component'
@@ -12,11 +12,6 @@ import { PatientService } from './patient.service'
   template: `
 	<div layout="row">
 		<div style="background-color:#EFF2F5" flex="30">
-			<div>
-				<label>LName: </label>
-				<input (keyup)="onKey($event)"/>
-			</div>
-
 			<div *ngIf="patients">
 					<table border="1" width="100%">
 
@@ -116,26 +111,36 @@ import { PatientService } from './patient.service'
 
 })
 
-export class PatientSelect implements OnInit {
+export class PatientSelect implements OnInit, OnChanges {
 
 	loadRequest = new EventEmitter<number>();
+
+	@Input() searchQuery: string = '';
 
 	constructor(private patientService : PatientService) {}
 
 	ngOnInit(): void {
+		this.searchPatients(this.searchQuery);
+	}
+
+	ngOnChanges(changes: SimpleChanges): void {
+		if (changes['searchQuery']) {
+			this.searchPatients(this.searchQuery);
+		}
+	}
+
+	private searchPatients(query: string): void {
+		this.patientService.getPatients(query)
+			.subscribe({
+				next: patients => this.patients = patients,
+				error: error => this.errorMessage = <any>error
+			});
 	}
 
 	onSelect(patient: PatientBasicInfo): void {
 		console.log("Selected patient: " + patient.fullName);
 		this.selectedPatient = patient.id;
 	}
-
-	onKey(event:any) {
-			this.patientService.getPatients(event.target.value)
-							.subscribe(
-							patients => this.patients = patients,
-							error => this.errorMessage = <any>error);
-    }
 
 	patients : PatientBasicInfo[];
 	patientSearchText : string;

@@ -52,8 +52,8 @@ class PatientController {
     }
 
     @RequestMapping(value = "/patient", method = RequestMethod.GET)
-    public Page<PatientBasicInfo> getPatientsByLastName(@RequestParam(value="name", defaultValue="") String name, Pageable pageable) {
-        Page<Patient> patient_info_page = patientService.findByLastNameLike(name, pageable);
+    public Page<PatientBasicInfo> getPatientsByName(@RequestParam(value="name", defaultValue="") String name, Pageable pageable) {
+        Page<Patient> patient_info_page = patientService.findByName(name, pageable);
         List<PatientBasicInfo> patients_info = patient_info_page.getContent().stream().map(PatientBasicInfo::new).collect(Collectors.toList());
         return new PageImpl<PatientBasicInfo>(patients_info, pageable, patient_info_page.getTotalElements() );
     }

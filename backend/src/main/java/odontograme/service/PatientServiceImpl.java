@@ -27,6 +27,11 @@ public class PatientServiceImpl implements PatientService {
     }
 
     @Override
+    public Page<Patient> findByName(String name, Pageable pageable) {
+        return patientRepository.findByFirstNameContainingIgnoreCaseOrLastNameContainingIgnoreCase(name, name, pageable);
+    }
+
+    @Override
     public Page<Patient> findByFirstName(String firstName, Pageable pageable) {
         return patientRepository.findByFirstName(firstName, pageable);
     }

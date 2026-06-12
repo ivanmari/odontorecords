@@ -11,6 +11,7 @@ public interface PatientService {
     Page<Patient> findAll(Pageable p);
     Page<Patient> findByFirstName(String firstName, Pageable pageable);
     Page<Patient> findByLastNameLike(String lastName, Pageable pageable);
+    Page<Patient> findByName(String name, Pageable pageable);
     Optional<Patient> findByPatientId(String id);
     void addPatient(Optional<Patient> patient);
     void deletePatientById(String id) throws PatientIdNotFoundException;
