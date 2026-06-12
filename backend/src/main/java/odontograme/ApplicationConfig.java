@@ -8,7 +8,7 @@ import org.springframework.data.web.config.EnableSpringDataWebSupport;
  * Restored EnableSpringDataWebSupport for Pageable resolution in Controllers.
  */
 @Configuration
-@EnableSpringDataWebSupport
+@EnableSpringDataWebSupport(pageSerializationMode = EnableSpringDataWebSupport.PageSerializationMode.VIA_DTO)
 public class ApplicationConfig {
 
 }
