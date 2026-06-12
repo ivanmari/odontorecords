@@ -10,7 +10,7 @@ export class Patient
 	apartment  : string;
 	socialSecOrg: string;
 	socialId   : string;
-	birthday   : string;
+	birthday   : any;
 	gender     : string;
 	phone      : string;
 	comments   : string;
