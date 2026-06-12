@@ -18,7 +18,6 @@ import java.util.List;
  */
 @Configuration
 @EnableWebMvc
-@EnableSpringDataWebSupport
 public class WebConfig extends WebMvcConfigurationSupport {
 
     @Bean
