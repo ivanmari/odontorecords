@@ -1,37 +1,27 @@
 import {Injectable} from '@angular/core';
-import {Http, Headers} from '@angular/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 
 @Injectable()
 export class HttpBasicAuth {
 
-  constructor(private http: Http) {}
+  constructor(private http: HttpClient) {}
 
-  createAuthorizationHeader(headers: Headers) {
-    headers.append('Authorization', 'Basic ' +
-      btoa('greg:turnquist')); 
+  private authHeader(): HttpHeaders {
+    return new HttpHeaders().set('Authorization', 'Basic ' + btoa('greg:turnquist'));
   }
 
-  get(url) {
-    let headers = new Headers();
-    this.createAuthorizationHeader(headers);
-    return this.http.get(url, {
-      headers: headers
-    });
+  get(url: string) {
+    const headers = this.authHeader();
+    return this.http.get(url, { headers });
   }
 
-  post(url, data) {
-    let headers = new Headers();
-    this.createAuthorizationHeader(headers);
-    return this.http.post(url, data, {
-      headers: headers
-    });
+  post(url: string, data: any) {
+    const headers = this.authHeader();
+    return this.http.post(url, data, { headers });
   }
-  
-    put(url, data) {
-    let headers = new Headers();
-    this.createAuthorizationHeader(headers);
-    return this.http.put(url, data, {
-      headers: headers
-    });
+
+  put(url: string, data: any) {
+    const headers = this.authHeader();
+    return this.http.put(url, data, { headers });
   }
 }
