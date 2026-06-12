@@ -126,17 +126,13 @@ public class Mouth {
 
 
 //Returns the practices done on permanent and temporary teeth*//*
-    public List< Map<Tooth.ToothFaceName, Practice> > getPractices(){
+    public List<Practice> getPractices(){
         List<Practice> permanentPractices = permanentTeeth.entrySet().stream()
-                .filter(mapEntry -> !mapEntry.getValue().getConsolidatedPractices().isEmpty())
-                .map(x -> x.getValue().getConsolidatedPractices())
-
+                .flatMap(mapEntry -> mapEntry.getValue().getPractices().stream())
                 .collect(Collectors.toList());
 
         List<Practice> temporaryPractices = temporaryTeeth.entrySet().stream()
-                .filter(mapEntry -> !mapEntry.getValue().getConsolidatedPractices().isEmpty())
-                .map(x -> x.getValue().getConsolidatedPractices())
-                .flatMap(List::stream)
+                .flatMap(mapEntry -> mapEntry.getValue().getPractices().stream())
                 .collect(Collectors.toList());
 
         return Stream.concat(permanentPractices.stream(), temporaryPractices.stream()).collect(Collectors.toList());
