@@ -16,7 +16,7 @@ public class Charge {
     @Id
     private ObjectId id;
 
-    private String PatientId;
+    private String patientId;
     private ObjectId practiceId;
     private Date deliveryDate;
     private int charge;
@@ -47,11 +47,11 @@ public class Charge {
     }
 
     public String getPatientId() {
-        return PatientId;
+        return patientId;
     }
 
     public void setPatientId(String patientId) {
-        PatientId = patientId;
+        this.patientId = patientId;
     }
 
     public ObjectId getPracticeId() {
