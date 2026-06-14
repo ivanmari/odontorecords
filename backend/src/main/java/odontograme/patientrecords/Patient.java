@@ -11,6 +11,7 @@ import odontograme.service.PracticeService;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.annotation.Transient;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -23,7 +24,9 @@ public class Patient {
     @Id
     final private ObjectId id;
 
+    @Transient
     private AccountService account;
+    @Transient
     private PracticeService practices;
     private int dni;
     private String firstName;
