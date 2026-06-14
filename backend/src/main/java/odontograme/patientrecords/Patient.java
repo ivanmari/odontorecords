@@ -22,12 +22,18 @@ import java.util.Optional;
 public class Patient {
 
     @Id
-    final private ObjectId id;
+    private ObjectId id;
 
     @Transient
     private AccountService account;
     @Transient
     private PracticeService practices;
+
+    public Patient() {
+        this.id = new ObjectId();
+        this.mouth = new Mouth();
+        this.address = new Address();
+    }
     private int dni;
     private String firstName;
     private String lastName;
@@ -46,7 +52,6 @@ public class Patient {
     private List<String> mouthSnapshot;
 
 
-    @Autowired
     public Patient(AccountService accountService, PracticeService practiceService) {
         this.id = new ObjectId();
 
@@ -56,7 +61,6 @@ public class Patient {
         address = new Address();
     }
 
-    @Autowired
     public Patient(ObjectId id, AccountService accountService) {
         this.id = id;
 
@@ -206,6 +210,10 @@ public class Patient {
 
     public void setAccount(AccountService account) {
         this.account = account;
+    }
+
+    public void setPractices(PracticeService practices) {
+        this.practices = practices;
     }
 
     public void setMouth(Mouth mouth) {
