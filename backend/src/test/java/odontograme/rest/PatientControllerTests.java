@@ -51,7 +51,6 @@ import static org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppC
 @ExtendWith(SpringExtension.class)
 @SpringBootTest
 @WebAppConfiguration
-@Disabled
 public class PatientControllerTests {
 
 
