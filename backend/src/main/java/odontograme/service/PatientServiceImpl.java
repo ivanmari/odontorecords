@@ -19,27 +19,41 @@ public class PatientServiceImpl implements PatientService {
     private AccountService accountService;
 
     @Autowired
+    private PracticeService practiceService;
+
+    @Autowired
     private PracticeCodesRepository practiceCodesRepository;
+
+    private void injectServices(Patient patient) {
+        patient.setAccount(accountService);
+        patient.setPractices(practiceService);
+    }
 
     public Page<Patient> findAll(Pageable p)
     {
-        return patientRepository.findAll(p);
+        Page<Patient> patients = patientRepository.findAll(p);
+        patients.forEach(this::injectServices);
+        return patients;
     }
 
     @Override
     public Page<Patient> findByFirstName(String firstName, Pageable pageable) {
-        return patientRepository.findByFirstName(firstName, pageable);
+        Page<Patient> patients = patientRepository.findByFirstName(firstName, pageable);
+        patients.forEach(this::injectServices);
+        return patients;
     }
 
     @Override
     public Page<Patient> findByLastNameLike(String lastName, Pageable pageable) {
-        return patientRepository.findByLastNameLike(lastName, pageable);
+        Page<Patient> patients = patientRepository.findByLastNameLike(lastName, pageable);
+        patients.forEach(this::injectServices);
+        return patients;
     }
 
     @Override
     public Optional<Patient> findByPatientId(String id) {
         return patientRepository.findById(id).map(patient -> {
-            patient.setAccount(accountService);
+            injectServices(patient);
             return patient;
         });
     }
