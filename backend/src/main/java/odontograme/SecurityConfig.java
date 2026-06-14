@@ -62,6 +62,7 @@ public class SecurityConfig {
             .cors(Customizer.withDefaults())
             .httpBasic(Customizer.withDefaults())
             .authorizeHttpRequests(auth -> auth
+                .requestMatchers(HttpMethod.GET, "/health").permitAll()
                 .requestMatchers(HttpMethod.GET, "/patients").hasRole("USER")
                 .requestMatchers(HttpMethod.POST, "/patients").hasRole("ADMIN")
                 .requestMatchers(HttpMethod.PUT, "/patients/**").hasRole("ADMIN")

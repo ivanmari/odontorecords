@@ -40,8 +40,8 @@ public class MongoConfig extends AbstractMongoClientConfiguration {
             connectionString = "mongodb://localhost:27017/" + getDatabaseName();
         } else {
             String password = System.getenv("MONGODB_PASSWORD");
-            if (password == null) {
-                password = "";
+            if (password == null || password.isBlank()) {
+                throw new IllegalStateException("MONGODB_PASSWORD environment variable is missing.");
             }
             String encodedPassword;
             try {
