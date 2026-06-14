@@ -24,10 +24,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.DynamicPropertyRegistry;
+import org.springframework.test.context.DynamicPropertySource;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.web.context.WebApplicationContext;
+import org.testcontainers.containers.MongoDBContainer;
+import org.testcontainers.junit.jupiter.Container;
+import org.testcontainers.junit.jupiter.Testcontainers;
 
 import java.nio.charset.Charset;
 import java.sql.Date;
@@ -51,7 +56,16 @@ import static org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppC
 @ExtendWith(SpringExtension.class)
 @SpringBootTest
 @WebAppConfiguration
+@Testcontainers
 public class PatientControllerTests {
+
+    @Container
+    static MongoDBContainer mongoDBContainer = new MongoDBContainer("mongo:4.4.2");
+
+    @DynamicPropertySource
+    static void setProperties(DynamicPropertyRegistry registry) {
+        registry.add("spring.data.mongodb.uri", mongoDBContainer::getReplicaSetUrl);
+    }
 
 
     private MediaType contentType = new MediaType(MediaType.APPLICATION_JSON.getType(),
@@ -165,6 +179,15 @@ public class PatientControllerTests {
                 .andReturn().getResponse().getContentAsString();
 
         System.out.println(output);
+    }
+
+    @Test
+    public void getPatientsWithEmptyNameDoesNotCrash() throws Exception {
+        // This test simulates the frontend start-up call that was causing a backend crash
+        // due to naming inconsistencies in the Charge entity during balance calculation.
+        mockMvc.perform(get("/patient?name="))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.content").isArray());
     }
 
         @Disabled
