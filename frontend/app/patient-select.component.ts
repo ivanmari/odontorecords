@@ -134,6 +134,10 @@ export class PatientSelect implements OnInit, OnChanges {
 	}
 
 	private searchPatients(term: string) {
+		if (!term || term.trim() === '') {
+			this.patients = [];
+			return;
+		}
 		this.patientService.getPatients(term)
 						.subscribe(
 						patients => this.patients = patients,

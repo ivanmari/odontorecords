@@ -90,6 +90,14 @@ export class PatientService {
       .pipe(catchError(this.handleError));
   }
 
+  public getPatientPractices(patientId: string): Observable<Practice[]> {
+    return this.http.get<any>(this.baseUrl + this.patientUrl + "/" + patientId + "/practices", { headers: this.getHeaders() })
+      .pipe(
+        map(response => response.content),
+        catchError(this.handleError)
+      );
+  }
+
   public updatePatient(patient: Patient): Observable<boolean> {
     console.log("Updating patient:", patient);
     return this.http.put(this.baseUrl + this.patientUrl, patient, { headers: this.getHeaders(), observe: 'response' })
