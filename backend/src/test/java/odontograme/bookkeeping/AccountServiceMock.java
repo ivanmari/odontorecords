@@ -2,6 +2,7 @@ package odontograme.bookkeeping;
 
 import odontograme.bookkeeping.exceptions.InstallmentIdNotFoundException;
 import odontograme.bookkeeping.exceptions.InstallmentPresentException;
+import odontograme.patientrecords.Practice;
 import odontograme.service.AccountService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -11,6 +12,11 @@ import java.util.Optional;
 public class AccountServiceMock implements AccountService {
     @Override
     public int getBalance(String patientId) {
+        return 0;
+    }
+
+    @Override
+    public int getPracticeCost(Practice practice) {
         return 0;
     }
 
