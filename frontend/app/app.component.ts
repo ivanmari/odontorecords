@@ -10,21 +10,78 @@ import { PatientSelect } from './patient-select.component'
   
   template: `
   <mat-toolbar color="primary">
+    <button mat-icon-button (click)="sidenav.toggle()">
+      <mat-icon>menu</mat-icon>
+    </button>
     <span>OdontoRecords</span>
     <span class="health-indicator" [class.up]="isBackendUp" [class.down]="!isBackendUp" title="Backend Status"></span>
     <span class="spacer"></span>
-    <mat-form-field appearance="outline" class="search-field">
-      <mat-label>Search Patient</mat-label>
-      <input matInput (keyup)="onSearch($event)" placeholder="Enter patient name">
-    </mat-form-field>
   </mat-toolbar>
   
-  <div class="content">
-    <patient-select [searchTerm]="searchTerm">Loading... </patient-select>
-  </div>
+  <mat-sidenav-container class="sidenav-container">
+    <mat-sidenav #sidenav mode="side" opened class="sidenav">
+      <mat-nav-list>
+        <a mat-list-item (click)="selectedMenu = 'patients'" [class.active]="selectedMenu === 'patients'">
+          <mat-icon matListIcon>people</mat-icon>
+          <span matLine>Patients</span>
+        </a>
+        <a mat-list-item (click)="selectedMenu = 'accounting'" [class.active]="selectedMenu === 'accounting'">
+          <mat-icon matListIcon>account_balance</mat-icon>
+          <span matLine>Accounting</span>
+        </a>
+        <a mat-list-item (click)="selectedMenu = 'inventory'" [class.active]="selectedMenu === 'inventory'">
+          <mat-icon matListIcon>inventory_2</mat-icon>
+          <span matLine>Inventory</span>
+        </a>
+      </mat-nav-list>
+    </mat-sidenav>
+
+    <mat-sidenav-content>
+      <div [ngSwitch]="selectedMenu" class="content">
+        <div *ngSwitchCase="'patients'">
+          <div class="search-container">
+            <mat-form-field appearance="outline" class="search-field">
+              <mat-label>Search Patient</mat-label>
+              <input matInput (keyup)="onSearch($event)" placeholder="Enter patient surname">
+            </mat-form-field>
+          </div>
+          <patient-select [searchTerm]="searchTerm">Loading... </patient-select>
+        </div>
+
+        <div *ngSwitchCase="'accounting'">
+          <mat-card>
+            <mat-card-header>
+              <mat-card-title>Accounting</mat-card-title>
+            </mat-card-header>
+            <mat-card-content>
+              <p>Accounting module coming soon...</p>
+            </mat-card-content>
+          </mat-card>
+        </div>
+
+        <div *ngSwitchCase="'inventory'">
+          <mat-card>
+            <mat-card-header>
+              <mat-card-title>Inventory</mat-card-title>
+            </mat-card-header>
+            <mat-card-content>
+              <p>Inventory module coming soon...</p>
+            </mat-card-content>
+          </mat-card>
+        </div>
+      </div>
+    </mat-sidenav-content>
+  </mat-sidenav-container>
 
   `,
   styles: [`
+    .sidenav-container {
+      height: calc(100vh - 64px);
+    }
+    .sidenav {
+      width: 200px;
+      background-color: #fafafa;
+    }
     .spacer {
       flex: 1 1 auto;
     }
@@ -42,12 +99,22 @@ import { PatientSelect } from './patient-select.component'
     .health-indicator.down {
       background-color: #f44336;
     }
+    .search-container {
+      margin-bottom: 20px;
+    }
     .search-field {
-      font-size: 14px;
-      margin-top: 15px;
+      width: 100%;
+      max-width: 400px;
     }
     .content {
       padding: 20px;
+    }
+    .active {
+      background-color: rgba(0, 0, 0, 0.04);
+      color: #3f51b5;
+    }
+    [matListIcon] {
+      margin-right: 16px;
     }
   `]
 })
@@ -55,6 +122,7 @@ import { PatientSelect } from './patient-select.component'
 export class AppComponent implements OnInit {
   searchTerm: string = '';
   isBackendUp: boolean = false;
+  selectedMenu: string = 'patients';
 
   constructor(private http: HttpClient) {}
 

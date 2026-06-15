@@ -16,6 +16,9 @@ export class Patient
 	comments   : string;
 	firstVisit : string;
 	balance    : number;
+	visitType  : string;
+	reasonVisit: string;
+	recentVisits: any[];
     
 	fromJson() : void {
 	}
