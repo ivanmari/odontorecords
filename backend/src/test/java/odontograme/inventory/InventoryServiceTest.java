@@ -38,44 +38,53 @@ public class InventoryServiceTest {
     }
 
     @Test
-    public void testConsumeSupplies() {
-        DentalSupply resin = new DentalSupply("Test Resin", DentalSupplyCategory.Resin, 50, 10);
-        resin.setId("resin123");
+    public void testConsumeSuppliesMultipleQuantity() {
+        DentalSupply resinInDb = new DentalSupply("Test Resin", DentalSupplyCategory.Resin, 50, 10);
+        resinInDb.setId("resin123");
 
-        when(dentalSupplyRepository.findById("resin123")).thenReturn(Optional.of(resin));
+        DentalSupply usedResin = new DentalSupply("Test Resin", DentalSupplyCategory.Resin, 50, 3);
+        usedResin.setId("resin123");
 
-        inventoryService.consumeSupplies(Collections.singletonList(resin));
+        when(dentalSupplyRepository.findById("resin123")).thenReturn(Optional.of(resinInDb));
 
-        assertThat(resin.getQuantity()).isEqualTo(9);
-        verify(dentalSupplyRepository, times(1)).save(resin);
+        inventoryService.consumeSupplies(Collections.singletonList(usedResin));
+
+        assertThat(resinInDb.getQuantity()).isEqualTo(7);
+        verify(dentalSupplyRepository, times(1)).save(resinInDb);
     }
 
     @Test
     public void testPracticeServiceTriggersConsumption() {
-        DentalSupply resin = new DentalSupply("Test Resin", DentalSupplyCategory.Resin, 50, 10);
-        resin.setId("resin123");
-        when(dentalSupplyRepository.findById("resin123")).thenReturn(Optional.of(resin));
+        DentalSupply resinInDb = new DentalSupply("Test Resin", DentalSupplyCategory.Resin, 50, 10);
+        resinInDb.setId("resin123");
+        when(dentalSupplyRepository.findById("resin123")).thenReturn(Optional.of(resinInDb));
+
+        DentalSupply usedResin = new DentalSupply("Test Resin", DentalSupplyCategory.Resin, 50, 1);
+        usedResin.setId("resin123");
 
         Practice practice = new Practice(Practice.Code.FillingBack, Instant.now(), 100);
-        practice.setUsedSupplies(Collections.singletonList(resin));
+        practice.setUsedSupplies(Collections.singletonList(usedResin));
         practice.setDone(true);
 
         practiceService.addPractice(practice);
 
-        assertThat(resin.getQuantity()).isEqualTo(9);
-        verify(dentalSupplyRepository, times(1)).save(resin);
+        assertThat(resinInDb.getQuantity()).isEqualTo(9);
+        verify(dentalSupplyRepository, times(1)).save(resinInDb);
         verify(practiceRepository, times(1)).save(practice);
     }
 
     @Test
     public void testPracticeServiceTriggersConsumptionOnTransition() {
-        DentalSupply resin = new DentalSupply("Test Resin", DentalSupplyCategory.Resin, 50, 10);
-        resin.setId("resin123");
-        when(dentalSupplyRepository.findById("resin123")).thenReturn(Optional.of(resin));
+        DentalSupply resinInDb = new DentalSupply("Test Resin", DentalSupplyCategory.Resin, 50, 10);
+        resinInDb.setId("resin123");
+        when(dentalSupplyRepository.findById("resin123")).thenReturn(Optional.of(resinInDb));
+
+        DentalSupply usedResin = new DentalSupply("Test Resin", DentalSupplyCategory.Resin, 50, 1);
+        usedResin.setId("resin123");
 
         Practice practice = new Practice(Practice.Code.FillingBack, null, 100);
         practice.setId(new org.bson.types.ObjectId().toString());
-        practice.setUsedSupplies(Collections.singletonList(resin));
+        practice.setUsedSupplies(Collections.singletonList(usedResin));
         practice.setDone(false);
 
         // Old practice state (planned)
@@ -87,17 +96,17 @@ public class InventoryServiceTest {
         practice.setDone(true);
         practiceService.updatePractice(Optional.of(practice));
 
-        assertThat(resin.getQuantity()).isEqualTo(9);
-        verify(dentalSupplyRepository, times(1)).save(resin);
+        assertThat(resinInDb.getQuantity()).isEqualTo(9);
+        verify(dentalSupplyRepository, times(1)).save(resinInDb);
     }
 
     @Test
-    public void testPracticeCost() {
-        DentalSupply resin = new DentalSupply("Test Resin", DentalSupplyCategory.Resin, 50, 10);
+    public void testPracticeCostMultipleQuantity() {
+        DentalSupply resin = new DentalSupply("Test Resin", DentalSupplyCategory.Resin, 50, 2);
         Practice practice = new Practice(Practice.Code.FillingBack, Instant.now(), 100);
         practice.setUsedSupplies(Collections.singletonList(resin));
 
-        assertThat(practice.getSuppliesCost()).isEqualTo(50);
-        assertThat(accountService.getPracticeCost(practice)).isEqualTo(50);
+        assertThat(practice.getSuppliesCost()).isEqualTo(100);
+        assertThat(accountService.getPracticeCost(practice)).isEqualTo(100);
     }
 }

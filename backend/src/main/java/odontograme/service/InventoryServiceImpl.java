@@ -24,7 +24,7 @@ public class InventoryServiceImpl implements InventoryService {
             if (supply.getId() != null) {
                 Optional<DentalSupply> dbSupplyOpt = dentalSupplyRepository.findById(supply.getId());
                 dbSupplyOpt.ifPresent(dbSupply -> {
-                    dbSupply.setQuantity(dbSupply.getQuantity() - 1);
+                    dbSupply.setQuantity(dbSupply.getQuantity() - supply.getQuantity());
                     dentalSupplyRepository.save(dbSupply);
                 });
             }

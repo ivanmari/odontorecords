@@ -177,7 +177,7 @@ public class Practice {
     }
 
     public int getSuppliesCost() {
-        return usedSupplies.stream().mapToInt(DentalSupply::getPurchaseCost).sum();
+        return usedSupplies.stream().mapToInt(s -> s.getPurchaseCost() * s.getQuantity()).sum();
     }
 
     public Boolean isPreexisting(){
