@@ -1,5 +1,6 @@
 package odontograme.patientrecords;
 
+import odontograme.inventory.DentalSupply;
 import odontograme.patientrecords.odontogram.Tooth;
 import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
@@ -76,6 +77,9 @@ public class Practice {
     @Field("comments")
     private String comments;
 
+    @Field("used_supplies")
+    private List<DentalSupply> usedSupplies = new ArrayList<>();
+
     /*This flag indicates if the practice was done before being registered as a patient*/
     private Boolean preexisting;
 
@@ -128,6 +132,10 @@ public class Practice {
         return id.toString();
     }
 
+    public void setId(String id) {
+        this.id = new ObjectId(id);
+    }
+
     public Practice.Code getCode() {
         return code;
     }
@@ -158,6 +166,18 @@ public class Practice {
 
     public void setComments(String comments) {
         this.comments = comments;
+    }
+
+    public List<DentalSupply> getUsedSupplies() {
+        return usedSupplies;
+    }
+
+    public void setUsedSupplies(List<DentalSupply> usedSupplies) {
+        this.usedSupplies = usedSupplies;
+    }
+
+    public int getSuppliesCost() {
+        return usedSupplies.stream().mapToInt(s -> s.getPurchaseCost() * s.getQuantity()).sum();
     }
 
     public Boolean isPreexisting(){

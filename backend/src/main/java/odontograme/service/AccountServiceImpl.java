@@ -5,6 +5,7 @@ import odontograme.bookkeeping.Installment;
 import odontograme.bookkeeping.exceptions.InstallmentPresentException;
 import odontograme.bookkeeping.exceptions.ChargeIdNotFoundException;
 import odontograme.bookkeeping.exceptions.InstallmentIdNotFoundException;
+import odontograme.patientrecords.Practice;
 import odontograme.repository.ChargeRepository;
 import odontograme.repository.InstallmentRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,6 +28,11 @@ public class AccountServiceImpl implements AccountService {
     public AccountServiceImpl(ChargeRepository chargeRepository, InstallmentRepository installmentRepository) {
         this.chargeRepository = chargeRepository;
         this.installmentRepository = installmentRepository;
+    }
+
+    @Override
+    public int getPracticeCost(Practice practice) {
+        return practice.getSuppliesCost();
     }
 
     @Override

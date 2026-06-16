@@ -4,6 +4,7 @@ import odontograme.bookkeeping.Charge;
 import odontograme.bookkeeping.Installment;
 import odontograme.bookkeeping.exceptions.InstallmentIdNotFoundException;
 import odontograme.bookkeeping.exceptions.InstallmentPresentException;
+import odontograme.patientrecords.Practice;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -11,6 +12,8 @@ import java.util.Optional;
 
 public interface AccountService {
     int getBalance(String patientId);
+
+    int getPracticeCost(Practice practice);
 
     void addCharge(Charge charge);
 
