@@ -49,7 +49,7 @@ import { Mouth } from './mouth.component'
 							</mat-card-header>
 							<mat-card-content>
 								<div class="mouth-view">
-									<mouth [patientId]="patientFull.id"></mouth>
+									<mouth [patientId]="patientFull.id" [editMode]="isEditing"></mouth>
 								</div>
 							</mat-card-content>
 						</mat-card>

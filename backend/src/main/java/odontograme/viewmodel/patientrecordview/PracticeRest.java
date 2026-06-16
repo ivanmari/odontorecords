@@ -18,6 +18,7 @@ public class PracticeRest {
     private int price;
     private String comments;
     private Boolean isPreexisting;
+    private String affectedPieces;
 
     public PracticeRest(){}
 
@@ -70,12 +71,21 @@ public class PracticeRest {
 
     public void setPreexisting(Boolean preexisting) { isPreexisting = preexisting; }
 
+    public String getAffectedPieces() {
+        return affectedPieces;
+    }
+
+    public void setAffectedPieces(String affectedPieces) {
+        this.affectedPieces = affectedPieces;
+    }
+
     @JsonIgnore
     public Practice getPractice (){
         System.out.println("getPractice: deliveryDate = " + this.deliveryDate);
-        Practice practice = new Practice(Practice.Code.FillingFront, Instant.parse(this.deliveryDate), this.price, this.isPreexisting);
+        Practice practice = new Practice(Practice.Code.valueOf(this.code), Instant.parse(this.deliveryDate), this.price, this.isPreexisting != null ? this.isPreexisting : false);
 
         practice.setComments(this.comments);
+        practice.setPieces(this.affectedPieces);
 
         return practice;
     }

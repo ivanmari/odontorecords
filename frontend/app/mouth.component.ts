@@ -4,8 +4,10 @@
 //Puede haber dos codigos que pinten una misma cara, uno antiguo y otro nuevo?
 //En este caso como se diferencian ambas practicas?
 
-import { Component,EventEmitter, Input, SimpleChanges } from '@angular/core';
+import { Component, EventEmitter, Input, SimpleChanges } from '@angular/core';
 import { OnInit } from '@angular/core';
+import { MatDialog } from '@angular/material/dialog';
+import { ToothEditDialog } from './tooth-edit-dialog.component';
 
 import { PatientService } from './patient.service'
 import { Patient } from './patient'
@@ -27,7 +29,19 @@ import { ToothDetails } from './tooth-details.component'
 		<polygon points="15,5 	20,0 	20,20 	15,15" [attr.fill]="getFaceColor(tooth, 'Mesial')" stroke="navy" stroke-width="0.5" id="R" opacity="1"></polygon>
 		<polygon points="0,0 	5,5 	5,15 	0,20" [attr.fill]="getFaceColor(tooth, 'Distal')" stroke="navy" stroke-width="0.5" id="L" opacity="1"></polygon>
 		<text x="6" y="30" stroke="navy" fill="navy" stroke-width="0.1" style="font-size: 6pt;font-weight:normal">{{tooth}}</text>
-		<svg  *ngIf="isRemoved(tooth)" id="tooth-ausente-red"><line x1="0" y1="0" x2="20" y2="20" stroke = "red" stroke-width="1"></line><line x1="20" y1="0" x2="0" y2="20" stroke="red" stroke-width="1"></line></svg>
+
+		<g *ngIf="getStatus(tooth) === 'Removed'">
+			<line x1="0" y1="0" x2="20" y2="20" [attr.stroke]="getToothColor(tooth)" stroke-width="1"></line>
+			<line x1="20" y1="0" x2="0" y2="20" [attr.stroke]="getToothColor(tooth)" stroke-width="1"></line>
+		</g>
+
+		<circle *ngIf="getStatus(tooth) === 'Crown'" cx="10" cy="10" r="12" fill="none" [attr.stroke]="getToothColor(tooth)" stroke-width="1"></circle>
+
+		<text *ngIf="getStatus(tooth) === 'Implant'" x="2" y="12" [attr.fill]="getToothColor(tooth)" style="font-size: 6px; font-weight: bold;">IMP</text>
+
+		<line *ngIf="getStatus(tooth) === 'BridgeStart'" x1="10" y1="-5" x2="25" y2="-5" [attr.stroke]="getToothColor(tooth)" stroke-width="2"></line>
+		<line *ngIf="getStatus(tooth) === 'BridgeIntermediate'" x1="-5" y1="-5" x2="25" y2="-5" [attr.stroke]="getToothColor(tooth)" stroke-width="2"></line>
+		<line *ngIf="getStatus(tooth) === 'BridgeEnd'" x1="-5" y1="-5" x2="10" y2="-5" [attr.stroke]="getToothColor(tooth)" stroke-width="2"></line>
 	</g>
 	</g> 			
   </svg>
@@ -41,6 +55,9 @@ export class Mouth
 {
 	@Input()
 	patientId: string;
+
+	@Input()
+	editMode: boolean = false;
 	
 	mouthData: MouthData = null;
 	
@@ -98,9 +115,24 @@ export class Mouth
 		return `translate ( ${index*separation} ,${row})`;
 	}
 	
-	onToothClick(tooth: number) : void
+	onToothClick(toothNum: number) : void
 	{
-		this.selectedTooth = tooth;
+		this.selectedTooth = toothNum;
+		if (this.editMode) {
+			const tooth = this.getTooth(toothNum);
+			if (tooth) {
+				const dialogRef = this.dialog.open(ToothEditDialog, {
+					width: '500px',
+					data: { tooth: JSON.parse(JSON.stringify(tooth)), patientId: this.patientId }
+				});
+
+				dialogRef.afterClosed().subscribe(result => {
+					if (result) {
+						this.getMouth(this.patientId);
+					}
+				});
+			}
+		}
 	}
 
 	getMouth(patientId : string){
@@ -166,35 +198,35 @@ TODO scope problem here for tooth var
 		return tooth;
 	}
 	
-	isRemoved(toothId: number): boolean
+	getStatus(toothId: number): string
 	{
-		let removed: boolean = false;
 		let tooth: Tooth = this.getTooth(toothId);
-		if(tooth)
-		{
-			if("Removed" === tooth["status"])
-			{
-				removed = true;
-			}
+		return tooth ? tooth.status : 'Healthy';
+	}
+
+	getToothColor(toothId: number): string {
+		let tooth: Tooth = this.getTooth(toothId);
+		if (tooth && tooth.planned) {
+			return 'red';
 		}
-		
-		return removed;
+		return 'blue';
 	}
 		
 	getFaceColor(toothNum: number, faceToPaint: string): string
 	{
 		let color: string = "white";
-		//console.log("GetFaceColor for tooth: " + toothNum);
 		if(this.mouthData){	
-			let faces: ToothFace[] = this.getTooth(toothNum)["faces"];
+			let tooth = this.getTooth(toothNum);
+			let faces: ToothFace[] = tooth["faces"];
 			
-			//console.log("Looking for face: " + faceToPaint);
 			for( let face of faces)
 			{
 				if(faceToPaint === face["name"])
 				{
-					color = face["color"];
-					//console.log("Found: " + face["name"] + " with color: " + color + " toothNum= " toothNum);
+					if (face["filled"]) {
+						return (tooth.planned || face.planned) ? 'red' : 'blue';
+					}
+					color = face["color"] || "white";
 				}
 			}
 		}
@@ -203,7 +235,7 @@ TODO scope problem here for tooth var
 	}
 	
 	
-	constructor(private patientService : PatientService)
+	constructor(private patientService : PatientService, private dialog: MatDialog)
 	{
 	}
 }

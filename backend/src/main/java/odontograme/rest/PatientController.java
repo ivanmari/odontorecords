@@ -5,6 +5,7 @@ import odontograme.service.PatientService;
 import odontograme.patientrecords.exceptions.PatientIdNotFoundException;
 import odontograme.patientrecords.Patient;
 import odontograme.patientrecords.odontogram.Mouth;
+import odontograme.patientrecords.odontogram.Tooth;
 import odontograme.repository.PracticeCodesRepository;
 import odontograme.service.PracticeService;
 import odontograme.socialsecurity.PracticeCodeTable;
@@ -65,20 +66,9 @@ class PatientController {
 
 
     @RequestMapping(value = "/patient/{id}/graphmouth", method = RequestMethod.GET)
-    public MouthGraphic getPatientGraphicMouth(@PathVariable String id, @RequestParam(value="closingDate", defaultValue="") String closingDateStr, @RequestParam(value="healthProvider", defaultValue="Generic") String healthProvider){
-        MouthGraphic mouthGraphic = null;
+    public Mouth getPatientGraphicMouth(@PathVariable String id, @RequestParam(value="closingDate", defaultValue="") String closingDateStr, @RequestParam(value="healthProvider", defaultValue="Generic") String healthProvider){
         Patient patient = patientService.findByPatientId(id).orElseThrow(PatientIdNotFoundException::new);
-            Mouth mouth = patient.getMouth();
-
-            if (closingDateStr.isEmpty()) {
-                closingDateStr = Instant.now().toString();
-            }
-
-            PracticeCodeTable practiceCodeTable = practiceCodesRepository.findByHealthProviderName(healthProvider);
-
-            mouthGraphic = new MouthGraphic();
-
-        return mouthGraphic;
+        return patient.getMouth();
     }
 
 
@@ -120,6 +110,18 @@ class PatientController {
             responseEntity = ResponseEntity.created(location).build();
         }
         return responseEntity;
+    }
+
+    @RequestMapping(value = "/patient/{patientId}/tooth/{toothId}/status", method = RequestMethod.PUT)
+    public ResponseEntity<?> updateToothStatus(@PathVariable String patientId, @PathVariable int toothId, @RequestParam Tooth.ToothStatus status, @RequestParam boolean planned) {
+        patientService.updateToothStatus(patientId, toothId, status, planned);
+        return ResponseEntity.ok().build();
+    }
+
+    @RequestMapping(value = "/patient/{patientId}/tooth/{toothId}/face/{faceName}", method = RequestMethod.PUT)
+    public ResponseEntity<?> updateToothFaceStatus(@PathVariable String patientId, @PathVariable int toothId, @PathVariable String faceName, @RequestParam boolean filled, @RequestParam boolean planned) {
+        patientService.updateToothFaceStatus(patientId, toothId, faceName, filled, planned);
+        return ResponseEntity.ok().build();
     }
 
     public void setPracticeCodesRepository(PracticeCodesRepository practiceCodesRepository) {
