@@ -8,8 +8,6 @@ import odontograme.patientrecords.odontogram.Mouth;
 import odontograme.patientrecords.odontogram.Tooth;
 import odontograme.repository.PracticeCodesRepository;
 import odontograme.service.PracticeService;
-import odontograme.socialsecurity.PracticeCodeTable;
-import odontograme.viewmodel.odontogramview.piecegenerator.MouthGraphic;
 import odontograme.viewmodel.patientrecordview.PatientBasicInfo;
 import odontograme.viewmodel.patientrecordview.PatientFullInfo;
 import org.springframework.beans.factory.annotation.Autowired;
