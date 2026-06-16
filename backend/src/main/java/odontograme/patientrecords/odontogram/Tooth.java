@@ -1,5 +1,6 @@
 package odontograme.patientrecords.odontogram;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -104,8 +105,11 @@ public class Tooth {
     private int order;
     private boolean planned;
     private List<ToothFace> faces;
+    @JsonIgnore
     private java.util.List<odontograme.patientrecords.Disease> diseases;
+    @JsonIgnore
     private java.util.List<odontograme.patientrecords.Practice> practices;
+    @JsonIgnore
     private java.util.Map<ToothFaceName, java.util.List<odontograme.patientrecords.Practice>> facePractices;
     private ToothStatus status;
 
