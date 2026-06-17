@@ -11,225 +11,215 @@ import { Mouth } from './mouth.component'
 	selector:'patient-details',
 	template: `
 		<div class="actions" *ngIf="!patientFull || !isUpdate">
-			<button mat-raised-button color="accent" (click)="reset()">Add New</button>
+			<button mat-raised-button color="accent" (click)="reset()">Add New Patient</button>
 		</div>
 
 		<div *ngIf="patientFull" class="profile-container">
-			<div *ngIf="isUpdate" class="profile-view">
-				<!-- Comprehensive Patient Record Header -->
-				<mat-card class="header-card">
-					<div layout="row" layout-align="space-between center">
-						<div flex="60">
-							<h1 class="patient-name">{{patientFull.firstName}} {{patientFull.lastName}}</h1>
-							<div class="patient-meta">
-								<span><strong>MRN:</strong> {{patientFull.dni}}</span>
-								<span class="meta-separator">|</span>
-								<span><strong>Visit Type:</strong> {{patientFull.visitType || 'Regular'}}</span>
-								<span class="meta-separator">|</span>
-								<span><strong>Reason:</strong> {{patientFull.reasonVisit || 'Check-up'}}</span>
-							</div>
-						</div>
-						<div flex="40" style="text-align: right;">
-							<button mat-stroked-button color="primary" (click)="isEditing = !isEditing">
-								<mat-icon>{{isEditing ? 'visibility' : 'edit'}}</mat-icon>
-								{{isEditing ? 'View Profile' : 'Edit Details'}}
-							</button>
-							<button mat-flat-button color="accent" (click)="reset()" style="margin-left: 10px;">New Patient</button>
+			<!-- Patient Header -->
+			<mat-card class="header-card">
+				<div layout="row" layout-align="space-between center">
+					<div flex="60">
+						<h1 class="patient-name">{{patientFull.firstName}} {{patientFull.lastName}}</h1>
+						<div class="patient-meta">
+							<span><strong>MRN:</strong> {{patientFull.dni}}</span>
+							<span class="meta-separator">|</span>
+							<span><strong>Visit Type:</strong> {{patientFull.visitType || 'Regular'}}</span>
 						</div>
 					</div>
-				</mat-card>
+					<div flex="40" style="text-align: right;">
+						<button mat-flat-button color="accent" (click)="reset()">New Patient</button>
+					</div>
+				</div>
+			</mat-card>
 
-				<div layout="row" layout-gap="20px" class="dashboard-layout">
-					<!-- Main Dashboard Column -->
-					<div flex="70" layout="column" layout-gap="20px">
-						<!-- Odontograme Card -->
+			<mat-tab-group (selectedHeaderChange)="onTabChange($event)" [(selectedIndex)]="selectedTabIndex">
+				<!-- VIEW MODE TAB -->
+				<mat-tab label="Patient Profile">
+					<div layout="row" layout-gap="20px" class="tab-content">
+						<!-- Main Column -->
+						<div flex="70" layout="column" layout-gap="20px">
+							<mat-card>
+								<mat-card-header>
+									<mat-card-title>Odontograme</mat-card-title>
+								</mat-card-header>
+								<mat-card-content>
+									<div class="mouth-view">
+										<mouth [patientId]="patientFull.id" [editMode]="false"></mouth>
+									</div>
+								</mat-card-content>
+							</mat-card>
+
+							<mat-card>
+								<mat-card-header>
+									<mat-card-title>Clinical History</mat-card-title>
+								</mat-card-header>
+								<mat-card-content>
+									<table border="1" width="100%" class="practices-table">
+										<thead>
+											<tr>
+												<th>Date</th>
+												<th>Code</th>
+												<th>Price</th>
+												<th>Comments</th>
+											</tr>
+										</thead>
+										<tbody>
+											<tr *ngFor="let p of allPractices">
+												<td>{{p.deliveryDate | date}}</td>
+												<td>{{p.code}}</td>
+												<td>{{p.price | currency}}</td>
+												<td>{{p.comments}}</td>
+											</tr>
+											<tr *ngIf="allPractices.length === 0">
+												<td colspan="4" style="text-align: center; padding: 20px;">No practices recorded.</td>
+											</tr>
+										</tbody>
+									</table>
+								</mat-card-content>
+							</mat-card>
+						</div>
+
+						<!-- Right Panel -->
+						<div flex="30" layout="column" layout-gap="20px">
+							<mat-card class="balance-card" [class.negative]="patientFull.balance < 0">
+								<mat-card-header>
+									<mat-card-title>Account Balance</mat-card-title>
+								</mat-card-header>
+								<mat-card-content class="balance-content">
+									<div class="balance-amount">{{patientFull.balance | currency}}</div>
+								</mat-card-content>
+							</mat-card>
+
+							<mat-card>
+								<mat-card-header>
+									<mat-card-title>Recent Visits</mat-card-title>
+								</mat-card-header>
+								<mat-card-content>
+									<mat-list>
+										<mat-list-item *ngFor="let visit of patientFull.recentVisits">
+											<mat-icon matListIcon>calendar_today</mat-icon>
+											<div matLine><strong>{{visit.date | date}}</strong></div>
+											<div matLine>{{visit.reason}}</div>
+										</mat-list-item>
+									</mat-list>
+								</mat-card-content>
+							</mat-card>
+						</div>
+					</div>
+				</mat-tab>
+
+				<!-- EDIT MODE TAB -->
+				<mat-tab label="Edit Records">
+					<div layout="column" layout-gap="20px" class="tab-content">
+						<!-- Odontograme Edit Section -->
 						<mat-card>
 							<mat-card-header>
-								<div layout="row" layout-align="space-between center">
-									<mat-card-title>Odontograme</mat-card-title>
-									<div *ngIf="isEditing" class="edit-hint" style="color: #f44336; font-weight: bold;">
-										<mat-icon style="vertical-align: middle;">touch_app</mat-icon> Click a tooth to edit
+								<div layout="row" layout-align="space-between center" flex="100">
+									<mat-card-title>Interactive Odontograme</mat-card-title>
+									<div class="edit-hint" style="color: #f44336; font-weight: bold;">
+										<mat-icon style="vertical-align: middle;">touch_app</mat-icon> Click a tooth to modify clinical status
 									</div>
 								</div>
 							</mat-card-header>
 							<mat-card-content>
-								<div class="mouth-view">
-									<mouth [patientId]="patientFull.id" [editMode]="isEditing"></mouth>
+								<div class="mouth-view edit-view">
+									<mouth [patientId]="patientFull.id" [editMode]="true"></mouth>
 								</div>
 							</mat-card-content>
 						</mat-card>
 
-						<!-- Dental Practices History (Hidden in Edit Mode) -->
-						<mat-card *ngIf="!isEditing">
+						<!-- Demographic Data Form -->
+						<mat-card class="patient-form">
 							<mat-card-header>
-								<mat-card-title>Dental Practices History</mat-card-title>
+								<mat-card-title>{{isUpdate ? 'Update Patient Demographics' : 'New Patient Registration'}}</mat-card-title>
 							</mat-card-header>
 							<mat-card-content>
-								<table border="1" width="100%" class="practices-table">
-									<thead>
-										<tr>
-											<th>Date</th>
-											<th>Code</th>
-											<th>Price</th>
-											<th>Comments</th>
-										</tr>
-									</thead>
-									<tbody>
-										<tr *ngFor="let p of allPractices">
-											<td>{{p.deliveryDate | date}}</td>
-											<td>{{p.code}}</td>
-											<td>{{p.price | currency}}</td>
-											<td>{{p.comments}}</td>
-										</tr>
-										<tr *ngIf="allPractices.length === 0">
-											<td colspan="4" style="text-align: center; padding: 20px;">No practices recorded.</td>
-										</tr>
-									</tbody>
-								</table>
+								<div layout="column" class="form-container">
+									<div layout="row" layout-gap="10px">
+										<mat-form-field appearance="fill" flex="50">
+											<mat-label>First Name</mat-label>
+											<input matInput [(ngModel)]="patientFull.firstName" required>
+										</mat-form-field>
+										<mat-form-field appearance="fill" flex="50">
+											<mat-label>Last Name</mat-label>
+											<input matInput [(ngModel)]="patientFull.lastName" required>
+										</mat-form-field>
+									</div>
+
+									<div layout="row" layout-gap="10px">
+										<mat-form-field appearance="fill" flex="50">
+											<mat-label>DNI</mat-label>
+											<input matInput type="number" [(ngModel)]="patientFull.dni" required>
+										</mat-form-field>
+										<mat-form-field appearance="fill" flex="50">
+											<mat-label>Birthday</mat-label>
+											<input matInput [matDatepicker]="picker" [(ngModel)]="patientFull.birthday" required>
+											<mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+											<mat-datepicker #picker></mat-datepicker>
+										</mat-form-field>
+									</div>
+
+									<div layout="row" layout-gap="10px">
+										<mat-form-field appearance="fill" flex="50">
+											<mat-label>Social Security Org</mat-label>
+											<input matInput [(ngModel)]="patientFull.socialSecOrg">
+										</mat-form-field>
+										<mat-form-field appearance="fill" flex="50">
+											<mat-label>Social Security ID</mat-label>
+											<input matInput [(ngModel)]="patientFull.socialId">
+										</mat-form-field>
+									</div>
+
+									<div layout="row" layout-gap="10px">
+										<mat-form-field appearance="fill" flex="33">
+											<mat-label>Gender</mat-label>
+											<input matInput [(ngModel)]="patientFull.gender">
+										</mat-form-field>
+										<mat-form-field appearance="fill" flex="33">
+											<mat-label>Phone</mat-label>
+											<input matInput [(ngModel)]="patientFull.phone">
+										</mat-form-field>
+										<mat-form-field appearance="fill" flex="33">
+											<mat-label>City</mat-label>
+											<input matInput [(ngModel)]="patientFull.city">
+										</mat-form-field>
+									</div>
+
+									<div layout="row" layout-gap="10px">
+										<mat-form-field appearance="fill" flex="40">
+											<mat-label>Street</mat-label>
+											<input matInput [(ngModel)]="patientFull.street">
+										</mat-form-field>
+										<mat-form-field appearance="fill" flex="30">
+											<mat-label>Number</mat-label>
+											<input matInput [(ngModel)]="patientFull.streetNum">
+										</mat-form-field>
+										<mat-form-field appearance="fill" flex="30">
+											<mat-label>Apartment</mat-label>
+											<input matInput [(ngModel)]="patientFull.apartment">
+										</mat-form-field>
+									</div>
+
+									<div layout="row" layout-gap="10px">
+										<mat-form-field appearance="fill" flex="50">
+											<mat-label>Visit Type</mat-label>
+											<input matInput [(ngModel)]="patientFull.visitType">
+										</mat-form-field>
+										<mat-form-field appearance="fill" flex="50">
+											<mat-label>Reason for Visit</mat-label>
+											<input matInput [(ngModel)]="patientFull.reasonVisit">
+										</mat-form-field>
+									</div>
+								</div>
 							</mat-card-content>
+							<mat-card-actions align="end">
+								<button mat-raised-button color="primary" (click)="processForm()">{{isUpdate ? 'Update Patient' : 'Save Patient'}}</button>
+								<button mat-button (click)="selectedTabIndex = 0">Cancel</button>
+							</mat-card-actions>
 						</mat-card>
 					</div>
-
-					<!-- Right Panel Column -->
-					<div flex="30" layout="column" layout-gap="20px">
-						<!-- Account Balance Card -->
-						<mat-card class="balance-card" [class.negative]="patientFull.balance < 0">
-							<mat-card-header>
-								<mat-card-title>Account Balance</mat-card-title>
-							</mat-card-header>
-							<mat-card-content class="balance-content">
-								<div class="balance-amount">{{patientFull.balance | currency}}</div>
-							</mat-card-content>
-						</mat-card>
-
-						<!-- Recent Visits Card (Hidden in Edit Mode) -->
-						<mat-card *ngIf="!isEditing">
-							<mat-card-header>
-								<mat-card-title>Recent Visits</mat-card-title>
-							</mat-card-header>
-							<mat-card-content>
-								<mat-list>
-									<mat-list-item *ngFor="let visit of patientFull.recentVisits">
-										<mat-icon matListIcon>calendar_today</mat-icon>
-										<div matLine><strong>{{visit.date | date}}</strong></div>
-										<div matLine>{{visit.reason}}</div>
-									</mat-list-item>
-									<mat-list-item *ngIf="!patientFull.recentVisits || patientFull.recentVisits.length === 0">
-										<div matLine>No recent visits recorded.</div>
-									</mat-list-item>
-								</mat-list>
-							</mat-card-content>
-						</mat-card>
-
-						<!-- Edit Instructions -->
-						<mat-card *ngIf="isEditing" class="edit-instructions">
-							<mat-card-header>
-								<mat-card-title>Edit Mode Active</mat-card-title>
-							</mat-card-header>
-							<mat-card-content>
-								<p>You can now:</p>
-								<ul>
-									<li>Update patient demographic data below.</li>
-									<li>Click any tooth in the odontograme to set its clinical status.</li>
-								</ul>
-								<p>Click <strong>View Profile</strong> in the header to exit edit mode.</p>
-							</mat-card-content>
-						</mat-card>
-					</div>
-				</div>
-			</div>
-
-			<!-- Form View (for New or Editing) -->
-			<div *ngIf="!isUpdate || isEditing" class="patient-form" [style.margin-top]="isEditing ? '20px' : '0'">
-				<mat-card>
-					<mat-card-header>
-						<mat-card-title>{{isUpdate ? 'Edit Patient Details' : 'New Patient Registration'}}</mat-card-title>
-					</mat-card-header>
-					<mat-card-content>
-						<div layout="column" class="form-container">
-							<div layout="row" layout-gap="10px">
-								<mat-form-field appearance="fill" flex="50">
-									<mat-label>First Name</mat-label>
-									<input matInput [(ngModel)]="patientFull.firstName" required placeholder="First Name">
-								</mat-form-field>
-								<mat-form-field appearance="fill" flex="50">
-									<mat-label>Last Name</mat-label>
-									<input matInput [(ngModel)]="patientFull.lastName" required placeholder="Last Name">
-								</mat-form-field>
-							</div>
-
-							<div layout="row" layout-gap="10px">
-								<mat-form-field appearance="fill" flex="50">
-									<mat-label>DNI</mat-label>
-									<input matInput type="number" [(ngModel)]="patientFull.dni" required placeholder="DNI">
-								</mat-form-field>
-								<mat-form-field appearance="fill" flex="50">
-									<mat-label>Birthday</mat-label>
-									<input matInput [matDatepicker]="picker" [(ngModel)]="patientFull.birthday" required placeholder="Choose a date">
-									<mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
-									<mat-datepicker #picker></mat-datepicker>
-								</mat-form-field>
-							</div>
-
-							<div layout="row" layout-gap="10px">
-								<mat-form-field appearance="fill" flex="50">
-									<mat-label>Social Security Org</mat-label>
-									<input matInput [(ngModel)]="patientFull.socialSecOrg" placeholder="Social Security Org">
-								</mat-form-field>
-								<mat-form-field appearance="fill" flex="50">
-									<mat-label>Social Security ID</mat-label>
-									<input matInput [(ngModel)]="patientFull.socialId" placeholder="Social Security ID">
-								</mat-form-field>
-							</div>
-
-							<div layout="row" layout-gap="10px">
-								<mat-form-field appearance="fill" flex="33">
-									<mat-label>Gender</mat-label>
-									<input matInput [(ngModel)]="patientFull.gender" placeholder="Gender">
-								</mat-form-field>
-								<mat-form-field appearance="fill" flex="33">
-									<mat-label>Phone</mat-label>
-									<input matInput [(ngModel)]="patientFull.phone" placeholder="Phone">
-								</mat-form-field>
-								<mat-form-field appearance="fill" flex="33">
-									<mat-label>City</mat-label>
-									<input matInput [(ngModel)]="patientFull.city" placeholder="City">
-								</mat-form-field>
-							</div>
-
-							<div layout="row" layout-gap="10px">
-								<mat-form-field appearance="fill" flex="40">
-									<mat-label>Street</mat-label>
-									<input matInput [(ngModel)]="patientFull.street" placeholder="Street">
-								</mat-form-field>
-								<mat-form-field appearance="fill" flex="30">
-									<mat-label>Number</mat-label>
-									<input matInput [(ngModel)]="patientFull.streetNum" placeholder="Number">
-								</mat-form-field>
-								<mat-form-field appearance="fill" flex="30">
-									<mat-label>Apartment</mat-label>
-									<input matInput [(ngModel)]="patientFull.apartment" placeholder="Apartment">
-								</mat-form-field>
-							</div>
-
-							<div layout="row" layout-gap="10px">
-								<mat-form-field appearance="fill" flex="50">
-									<mat-label>Visit Type</mat-label>
-									<input matInput [(ngModel)]="patientFull.visitType" placeholder="e.g. Regular, Emergency">
-								</mat-form-field>
-								<mat-form-field appearance="fill" flex="50">
-									<mat-label>Reason for Visit</mat-label>
-									<input matInput [(ngModel)]="patientFull.reasonVisit" placeholder="Reason">
-								</mat-form-field>
-							</div>
-						</div>
-					</mat-card-content>
-					<mat-card-actions align="end">
-						<button mat-button color="primary" (click)="processForm()">{{isUpdate ? 'Update' : 'Save'}}</button>
-						<button mat-button *ngIf="isEditing" (click)="isEditing = false">Cancel</button>
-					</mat-card-actions>
-				</mat-card>
-			</div>
+				</mat-tab>
+			</mat-tab-group>
 		</div>
 		
 `,
@@ -255,11 +245,15 @@ styles: [`
 		margin: 0 10px;
 		color: #ccc;
 	}
+	.tab-content {
+		padding: 20px 0;
+	}
 	.dashboard-layout {
 		margin-top: 20px;
 	}
     .patient-form {
       padding: 0;
+	  margin-bottom: 20px;
     }
 	.form-container {
 		padding-top: 10px;
@@ -305,12 +299,18 @@ export class PatientDetails implements OnChanges
 	
 	isUpdate: boolean = true;
 	isEditing: boolean = false;
+	selectedTabIndex: number = 0;
 	updateError: boolean = false;
 	errorMessage: string = "";
 	allPractices: any[] = [];
 	
 	constructor(private patientService : PatientService, private snackBar: MatSnackBar) {}
 	
+	onTabChange(event: any) {
+		// Sync isEditing with tab selection
+		this.isEditing = (this.selectedTabIndex === 1);
+	}
+
 	getFullPatient(patientId : string){
 		if(patientId)
 		{
@@ -339,6 +339,7 @@ export class PatientDetails implements OnChanges
 					this.getFullPatient(patientId);
 					this.isUpdate = true;
 					this.isEditing = false;
+					this.selectedTabIndex = 0;
 				}
 			}
 		}

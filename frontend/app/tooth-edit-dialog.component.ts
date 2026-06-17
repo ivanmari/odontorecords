@@ -91,9 +91,12 @@ export class ToothEditDialog implements OnInit {
     public dialogRef: MatDialogRef<ToothEditDialog>,
     @Inject(MAT_DIALOG_DATA) public data: { tooth: Tooth, patientId: string },
     private patientService: PatientService
-  ) {}
+  ) {
+    console.log("Opening ToothEditDialog for tooth:", data.tooth.toothNumber);
+  }
 
   ngOnInit() {
+    if (!this.data.tooth.status) this.data.tooth.status = 'Healthy';
   }
 
   getFaceColor(faceName: string): string {

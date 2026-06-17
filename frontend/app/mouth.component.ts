@@ -46,8 +46,6 @@ import { ToothDetails } from './tooth-details.component'
 	</g> 			
   </svg>
 
-    <tooth-details  [toothId]="selectedTooth"  [patientId]="patientId"> </tooth-details>
-  
   `,
     providers: [PatientService]
 })
@@ -201,7 +199,7 @@ TODO scope problem here for tooth var
 	getStatus(toothId: number): string
 	{
 		let tooth: Tooth = this.getTooth(toothId);
-		return tooth ? tooth.status : 'Healthy';
+		return (tooth && tooth.status) ? tooth.status : 'Healthy';
 	}
 
 	getToothColor(toothId: number): string {
@@ -217,7 +215,9 @@ TODO scope problem here for tooth var
 		let color: string = "white";
 		if(this.mouthData){	
 			let tooth = this.getTooth(toothNum);
-			let faces: ToothFace[] = tooth["faces"];
+			if (!tooth || !tooth.faces) return color;
+
+			let faces: ToothFace[] = tooth.faces;
 			
 			for( let face of faces)
 			{
