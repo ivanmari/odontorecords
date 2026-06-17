@@ -3,6 +3,7 @@ import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { PatientService } from './patient.service';
 import { Tooth, ToothFace } from './mouthdata';
 import { Practice } from './practice';
+import { forkJoin, of } from 'rxjs';
 
 @Component({
   selector: 'tooth-edit-dialog',
@@ -130,18 +131,23 @@ export class ToothEditDialog implements OnInit {
       this.data.tooth.status,
       this.data.tooth.planned
     ).subscribe(() => {
-      if (this.data.tooth.status === 'Filling') {
-        this.data.tooth.faces.forEach(face => {
+      if (this.data.tooth.status === 'Filling' && this.data.tooth.faces && this.data.tooth.faces.length > 0) {
+        const faceUpdates = this.data.tooth.faces.map(face =>
           this.patientService.updateToothFaceStatus(
             this.data.patientId,
             this.data.tooth.toothNumber,
             face.name,
             face.filled,
             this.data.tooth.planned
-          ).subscribe();
+          )
+        );
+        forkJoin(faceUpdates).subscribe({
+            next: () => this.dialogRef.close(true),
+            error: () => this.dialogRef.close(true) // Close anyway on error for now
         });
+      } else {
+        this.dialogRef.close(true);
       }
-      this.dialogRef.close(true);
     });
   }
 

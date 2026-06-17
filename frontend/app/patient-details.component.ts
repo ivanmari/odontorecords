@@ -39,13 +39,18 @@ import { Mouth } from './mouth.component'
 					</div>
 				</mat-card>
 
-				<div *ngIf="!isEditing" layout="row" layout-gap="20px" class="dashboard-layout">
+				<div layout="row" layout-gap="20px" class="dashboard-layout">
 					<!-- Main Dashboard Column -->
 					<div flex="70" layout="column" layout-gap="20px">
 						<!-- Odontograme Card -->
 						<mat-card>
 							<mat-card-header>
-								<mat-card-title>Odontograme</mat-card-title>
+								<div layout="row" layout-align="space-between center">
+									<mat-card-title>Odontograme</mat-card-title>
+									<div *ngIf="isEditing" class="edit-hint" style="color: #f44336; font-weight: bold;">
+										<mat-icon style="vertical-align: middle;">touch_app</mat-icon> Click a tooth to edit
+									</div>
+								</div>
 							</mat-card-header>
 							<mat-card-content>
 								<div class="mouth-view">
@@ -54,8 +59,8 @@ import { Mouth } from './mouth.component'
 							</mat-card-content>
 						</mat-card>
 
-						<!-- Dental Practices History -->
-						<mat-card>
+						<!-- Dental Practices History (Hidden in Edit Mode) -->
+						<mat-card *ngIf="!isEditing">
 							<mat-card-header>
 								<mat-card-title>Dental Practices History</mat-card-title>
 							</mat-card-header>
@@ -97,8 +102,8 @@ import { Mouth } from './mouth.component'
 							</mat-card-content>
 						</mat-card>
 
-						<!-- Recent Visits Card -->
-						<mat-card>
+						<!-- Recent Visits Card (Hidden in Edit Mode) -->
+						<mat-card *ngIf="!isEditing">
 							<mat-card-header>
 								<mat-card-title>Recent Visits</mat-card-title>
 							</mat-card-header>
@@ -115,12 +120,27 @@ import { Mouth } from './mouth.component'
 								</mat-list>
 							</mat-card-content>
 						</mat-card>
+
+						<!-- Edit Instructions -->
+						<mat-card *ngIf="isEditing" class="edit-instructions">
+							<mat-card-header>
+								<mat-card-title>Edit Mode Active</mat-card-title>
+							</mat-card-header>
+							<mat-card-content>
+								<p>You can now:</p>
+								<ul>
+									<li>Update patient demographic data below.</li>
+									<li>Click any tooth in the odontograme to set its clinical status.</li>
+								</ul>
+								<p>Click <strong>View Profile</strong> in the header to exit edit mode.</p>
+							</mat-card-content>
+						</mat-card>
 					</div>
 				</div>
 			</div>
 
 			<!-- Form View (for New or Editing) -->
-			<div *ngIf="!isUpdate || isEditing" class="patient-form">
+			<div *ngIf="!isUpdate || isEditing" class="patient-form" [style.margin-top]="isEditing ? '20px' : '0'">
 				<mat-card>
 					<mat-card-header>
 						<mat-card-title>{{isUpdate ? 'Edit Patient Details' : 'New Patient Registration'}}</mat-card-title>
