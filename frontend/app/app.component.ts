@@ -60,14 +60,7 @@ import { PatientSelect } from './patient-select.component'
         </div>
 
         <div *ngSwitchCase="'inventory'">
-          <mat-card>
-            <mat-card-header>
-              <mat-card-title>Inventory</mat-card-title>
-            </mat-card-header>
-            <mat-card-content>
-              <p>Inventory module coming soon...</p>
-            </mat-card-content>
-          </mat-card>
+          <inventory-list></inventory-list>
         </div>
       </div>
     </mat-sidenav-content>

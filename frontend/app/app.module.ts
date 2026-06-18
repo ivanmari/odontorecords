@@ -28,6 +28,8 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatRadioModule } from '@angular/material/radio';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
+import { MatTableModule } from '@angular/material/table';
+import { InventoryListComponent } from './inventory-list.component';
 
 // Layout Directives
 @Directive({
@@ -80,7 +82,8 @@ export class FlexDirective {
     MatSelectModule,
     MatRadioModule,
     MatCheckboxModule,
-    MatButtonToggleModule
+    MatButtonToggleModule,
+    MatTableModule
   ],
   declarations: [
     AppComponent,
@@ -91,7 +94,8 @@ export class FlexDirective {
     Mouth,
     ToothEditDialog,
     FlexDirective,
-    LayoutDirective
+    LayoutDirective,
+    InventoryListComponent
   ],
   bootstrap: [AppComponent]
 })
