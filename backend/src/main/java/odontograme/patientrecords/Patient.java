@@ -208,6 +208,14 @@ public class Patient {
         this.comments = comments;
     }
 
+    public void setId(String id) {
+        this.id = new ObjectId(id);
+    }
+
+    public void setFirstVisit(Instant firstVisit) {
+        this.firstVisit = firstVisit;
+    }
+
     public void setAccount(AccountService account) {
         this.account = account;
     }

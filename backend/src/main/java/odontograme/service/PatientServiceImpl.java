@@ -80,11 +80,21 @@ public class PatientServiceImpl implements PatientService {
     @Override
     public void updatePatient(Optional<Patient> patient) {
         patient.ifPresent(p -> {
-            if (patientRepository.existsById(p.getId())) {
-                patientRepository.save(p);
-            } else {
-                throw new PatientIdNotFoundException();
-            }
+            Patient existingPatient = patientRepository.findById(p.getIdStr()).orElseThrow(PatientIdNotFoundException::new);
+
+            existingPatient.setDni(p.getDni());
+            existingPatient.setFirstName(p.getFirstName());
+            existingPatient.setLastName(p.getLastName());
+            p.getAddress().ifPresent(existingPatient::setAddress);
+            existingPatient.setSocialSecurityOrg(p.getSocialSecurityOrg());
+            existingPatient.setSocialId(p.getSocialId());
+            existingPatient.setBirthday(p.getBirthday());
+            existingPatient.setGender(p.getGender());
+            existingPatient.setPhone(p.getPhone());
+            existingPatient.setComments(p.getComments());
+            existingPatient.setFirstVisit(p.getFirstVisit());
+
+            patientRepository.save(existingPatient);
         });
     }
 
