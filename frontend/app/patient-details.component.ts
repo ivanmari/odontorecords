@@ -439,6 +439,7 @@ export class PatientDetails implements OnChanges
 	reset(){
 		this.patientFull = new Patient();
 		this.isUpdate = false;
+		this.allPractices = [];
 	}
 	
 }
