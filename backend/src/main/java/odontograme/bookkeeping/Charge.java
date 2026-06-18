@@ -1,7 +1,5 @@
 package odontograme.bookkeeping;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.PersistenceConstructor;
@@ -22,16 +20,17 @@ public class Charge {
     private int charge;
     private String details;
 
-    //REST response constructor
-    @JsonCreator
-    public Charge(@JsonProperty("practiceId")String practiceId, @JsonProperty("deliveryDate")Date deliveryDate, @JsonProperty("charge")int charge, @JsonProperty("details")String details) {
+    public Charge() {
+        this.id = new ObjectId();
+    }
+
+    public Charge(String practiceId, Date deliveryDate, int charge, String details) {
         this(practiceId != null ? new ObjectId(practiceId) : null, deliveryDate, charge, details);
     }
 
     @PersistenceConstructor
     public Charge(ObjectId practiceId, Date deliveryDate, int charge, String details) {
         this.id = new ObjectId();
-
         this.practiceId = practiceId;
         this.deliveryDate = deliveryDate;
         this.charge = charge;
@@ -54,6 +53,16 @@ public class Charge {
         return practiceId;
     }
 
+    public void setPracticeId(ObjectId practiceId) {
+        this.practiceId = practiceId;
+    }
+
+    public void setPracticeId(String practiceId) {
+        if (practiceId != null && !practiceId.isEmpty()) {
+            this.practiceId = new ObjectId(practiceId);
+        }
+    }
+
     public String getDetails() {
         return details;
     }
@@ -66,8 +75,16 @@ public class Charge {
         return deliveryDate;
     }
 
+    public void setDeliveryDate(Date deliveryDate) {
+        this.deliveryDate = deliveryDate;
+    }
+
     public int getCharge() {
         return charge;
+    }
+
+    public void setCharge(int charge) {
+        this.charge = charge;
     }
 
 }
