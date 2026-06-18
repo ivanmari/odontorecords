@@ -1,4 +1,4 @@
-import { Component, Input, OnChanges, SimpleChanges } from '@angular/core';
+import { Component, Input, Output, EventEmitter, OnChanges, SimpleChanges } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Patient } from './patient'
@@ -10,24 +10,27 @@ import { Mouth } from './mouth.component'
 @Component({
 	selector:'patient-details',
 	template: `
-		<div class="actions" *ngIf="!patientFull || !isUpdate">
-			<button mat-raised-button color="accent" (click)="reset()">Add New Patient</button>
-		</div>
-
 		<div *ngIf="patientFull" class="profile-container">
 			<!-- Patient Header -->
 			<mat-card class="header-card">
 				<div layout="row" layout-align="space-between center">
-					<div flex="60">
-						<h1 class="patient-name">{{patientFull.firstName}} {{patientFull.lastName}}</h1>
-						<div class="patient-meta">
+					<div flex="70">
+						<button mat-icon-button (click)="back.emit()" title="Back to Search">
+							<mat-icon>arrow_back</mat-icon>
+						</button>
+						<h1 class="patient-name" style="display: inline-block; vertical-align: middle; margin-left: 8px;">
+							{{isUpdate ? patientFull.firstName + ' ' + patientFull.lastName : 'New Patient Registration'}}
+						</h1>
+						<div class="patient-meta" style="margin-left: 48px;" *ngIf="isUpdate">
 							<span><strong>MRN:</strong> {{patientFull.dni}}</span>
 							<span class="meta-separator">|</span>
 							<span><strong>Visit Type:</strong> {{patientFull.visitType || 'Regular'}}</span>
 						</div>
 					</div>
-					<div flex="40" style="text-align: right;">
-						<button mat-flat-button color="accent" (click)="reset()">New Patient</button>
+					<div flex="30" style="text-align: right;">
+						<button mat-stroked-button color="primary" (click)="back.emit()">
+							<mat-icon>search</mat-icon> Search Patients
+						</button>
 					</div>
 				</div>
 			</mat-card>
@@ -294,6 +297,9 @@ export class PatientDetails implements OnChanges
 {
 	@Input()
 	patientId: string;
+
+	@Output()
+	back = new EventEmitter<void>();
 	
 	patientFull : Patient;
 	
@@ -333,13 +339,16 @@ export class PatientDetails implements OnChanges
 	ngOnChanges(changes : SimpleChanges) {
 		for(let propName in changes)
 		{
-			if(propName === "patientId" && changes[propName]) {
+			if(propName === "patientId") {
 				let patientId = changes[propName].currentValue;
 				if (patientId) {
 					this.getFullPatient(patientId);
 					this.isUpdate = true;
 					this.isEditing = false;
 					this.selectedTabIndex = 0;
+				} else {
+					// If patientId is null/undefined, it's a new patient
+					this.reset();
 				}
 			}
 		}
