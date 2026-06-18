@@ -25,7 +25,7 @@ public class Charge {
     //REST response constructor
     @JsonCreator
     public Charge(@JsonProperty("practiceId")String practiceId, @JsonProperty("deliveryDate")Date deliveryDate, @JsonProperty("charge")int charge, @JsonProperty("details")String details) {
-        this(new ObjectId(practiceId), deliveryDate, charge, details);
+        this(practiceId != null ? new ObjectId(practiceId) : null, deliveryDate, charge, details);
     }
 
     @PersistenceConstructor
@@ -38,10 +38,6 @@ public class Charge {
         this.details = details;
     }
 
-    /*
-    public Charge()
-    {this.id = new ObjectId();}
-*/
     public ObjectId getId() {
         return id;
     }
