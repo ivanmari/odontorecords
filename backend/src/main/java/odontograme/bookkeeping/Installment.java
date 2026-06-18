@@ -16,6 +16,7 @@ public class Installment {
     private ObjectId id;
     private String patientId;
     private ObjectId chargeId;
+    private ObjectId practiceId;
     private Date paymentDay;
     private int amount;
 
@@ -23,14 +24,23 @@ public class Installment {
     //TODO Remove this annotation as Java 8 support metadata for arguments in bytecode
     //Remember to add dependency parameter-module
     @JsonCreator
-    public Installment(@JsonProperty("chargeId")String chargeId, @JsonProperty("paymentDay")Date paymentDay, @JsonProperty("amount")int amount){
-        this(new ObjectId(chargeId), paymentDay, amount);
+    public Installment(@JsonProperty("chargeId")String chargeId, @JsonProperty("practiceId")String practiceId, @JsonProperty("paymentDay")Date paymentDay, @JsonProperty("amount")int amount){
+        this(new ObjectId(chargeId), practiceId != null ? new ObjectId(practiceId) : null, paymentDay, amount);
+    }
+
+    public Installment(String chargeId, Date paymentDay, int amount) {
+        this(new ObjectId(chargeId), null, paymentDay, amount);
+    }
+
+    public Installment(ObjectId chargeId, Date paymentDay, int amount) {
+        this(chargeId, null, paymentDay, amount);
     }
 
     @PersistenceConstructor
-    public Installment(ObjectId chargeId, Date paymentDay, int amount) {
+    public Installment(ObjectId chargeId, ObjectId practiceId, Date paymentDay, int amount) {
         this.id = new ObjectId();
         this.chargeId = chargeId;
+        this.practiceId = practiceId;
         this.paymentDay = paymentDay;
         this.amount = amount;
     }
@@ -49,6 +59,10 @@ public class Installment {
 
     public ObjectId getChargeId() {
         return chargeId;
+    }
+
+    public ObjectId getPracticeId() {
+        return practiceId;
     }
 
     public Date getPaymentDay() {
