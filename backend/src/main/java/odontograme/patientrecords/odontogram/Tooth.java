@@ -19,6 +19,7 @@ public class Tooth {
     public enum ToothStatus{
         Healthy,
         Caries,
+        Filling,
         Removed,
         Bridge,
         Crown,

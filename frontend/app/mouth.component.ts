@@ -195,7 +195,7 @@ export class Mouth
 			
 			for( let face of faces)
 			{
-				if(faceToPaint === face["name"])
+				if(faceToPaint === face["faceName"])
 				{
 					if (face["filled"]) {
 						return (tooth.planned || face.planned) ? 'red' : 'blue';

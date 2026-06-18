@@ -1,6 +1,6 @@
 export class ToothFace
 {
-	name: string;
+	faceName: string;
 	color: string;
 	filled: boolean;
 	planned: boolean;

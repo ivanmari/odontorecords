@@ -53,7 +53,7 @@ import { forkJoin, of } from 'rxjs';
             <h4 style="margin: 0 0 10px 0;">Affected Faces</h4>
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 5px;">
               <mat-checkbox *ngFor="let face of data.tooth.faces" [(ngModel)]="face.filled">
-                {{face.name}}
+                {{face.faceName}}
               </mat-checkbox>
             </div>
           </div>
@@ -100,7 +100,8 @@ export class ToothEditDialog implements OnInit {
   }
 
   getFaceColor(faceName: string): string {
-    const face = this.data.tooth.faces.find(f => f.name === faceName);
+    if (!this.data.tooth.faces) return 'white';
+    const face = this.data.tooth.faces.find(f => f.faceName === faceName);
     if (face && face.filled) {
       return this.data.tooth.planned || face.planned ? 'red' : 'blue';
     }
@@ -111,7 +112,8 @@ export class ToothEditDialog implements OnInit {
     if (this.data.tooth.status !== 'Filling') {
        this.data.tooth.status = 'Filling';
     }
-    const face = this.data.tooth.faces.find(f => f.name === faceName);
+    if (!this.data.tooth.faces) return;
+    const face = this.data.tooth.faces.find(f => f.faceName === faceName);
     if (face) {
       face.filled = !face.filled;
     }
@@ -139,7 +141,7 @@ export class ToothEditDialog implements OnInit {
           this.patientService.updateToothFaceStatus(
             this.data.patientId,
             this.data.tooth.toothNumber,
-            face.name,
+            face.faceName,
             face.filled,
             this.data.tooth.planned
           )
@@ -162,8 +164,8 @@ export class ToothEditDialog implements OnInit {
     practice.deliveryDate = practice.done ? new Date().toISOString() : null;
 
     let affected = `${this.data.tooth.toothNumber}`;
-    if (this.data.tooth.status === 'Filling') {
-      const faces = this.data.tooth.faces.filter(f => f.filled).map(f => f.name[0].toLowerCase()).join(':');
+    if (this.data.tooth.status === 'Filling' && this.data.tooth.faces) {
+      const faces = this.data.tooth.faces.filter(f => f.filled).map(f => f.faceName[0].toLowerCase()).join(':');
       if (faces) {
         affected += ` ${faces}`;
       }
