@@ -21,7 +21,7 @@ import { PatientSelect } from './patient-select.component'
   <mat-sidenav-container class="sidenav-container">
     <mat-sidenav #sidenav mode="side" opened class="sidenav">
       <mat-nav-list>
-        <a mat-list-item (click)="selectedMenu = 'patients'" [class.active]="selectedMenu === 'patients'">
+        <a mat-list-item (click)="selectedMenu = 'patients'; patientViewMode = 'search'; selectedPatientId = null" [class.active]="selectedMenu === 'patients'">
           <mat-icon matListIcon>people</mat-icon>
           <span matLine>Patients</span>
         </a>
@@ -39,13 +39,25 @@ import { PatientSelect } from './patient-select.component'
     <mat-sidenav-content>
       <div [ngSwitch]="selectedMenu" class="content">
         <div *ngSwitchCase="'patients'">
-          <div class="search-container">
-            <mat-form-field appearance="outline" class="search-field">
-              <mat-label>Search Patient</mat-label>
-              <input matInput (keyup)="onSearch($event)" placeholder="Enter patient surname">
-            </mat-form-field>
+          <div *ngIf="patientViewMode === 'search'">
+            <div layout="row" layout-align="space-between center" class="search-container">
+              <mat-form-field appearance="outline" class="search-field" flex="70">
+                <mat-label>Search Patient</mat-label>
+                <input matInput (keyup)="onSearch($event)" placeholder="Enter patient surname">
+                <mat-icon matSuffix>search</mat-icon>
+              </mat-form-field>
+              <div flex="25" style="text-align: right;">
+                <button mat-raised-button color="accent" (click)="onNewPatient()">
+                  <mat-icon>person_add</mat-icon> New Patient
+                </button>
+              </div>
+            </div>
+            <patient-select [searchTerm]="searchTerm" (confirmed)="onPatientConfirmed($event)">Loading... </patient-select>
           </div>
-          <patient-select [searchTerm]="searchTerm">Loading... </patient-select>
+
+          <div *ngIf="patientViewMode === 'details'">
+            <patient-details [patientId]="selectedPatientId" (back)="patientViewMode = 'search'"></patient-details>
+          </div>
         </div>
 
         <div *ngSwitchCase="'accounting'">
@@ -123,6 +135,8 @@ export class AppComponent implements OnInit {
   searchTerm: string = '';
   isBackendUp: boolean = false;
   selectedMenu: string = 'patients';
+  patientViewMode: 'search' | 'details' = 'search';
+  selectedPatientId: string | null = null;
 
   constructor(private http: HttpClient) {}
 
@@ -145,5 +159,15 @@ export class AppComponent implements OnInit {
   onSearch(event: Event) {
     const target = event.target as HTMLInputElement;
     this.searchTerm = target.value;
+  }
+
+  onPatientConfirmed(patientId: string) {
+    this.selectedPatientId = patientId;
+    this.patientViewMode = 'details';
+  }
+
+  onNewPatient() {
+    this.selectedPatientId = null;
+    this.patientViewMode = 'details';
   }
 }
