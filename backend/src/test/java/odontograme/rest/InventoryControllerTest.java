@@ -13,6 +13,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.Arrays;
+import java.util.Base64;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
@@ -31,6 +32,10 @@ public class InventoryControllerTest {
     @MockBean
     private InventoryService inventoryService;
 
+    private String getAuthHeader(String user, String pass) {
+        return "Basic " + Base64.getEncoder().encodeToString((user + ":" + pass).getBytes());
+    }
+
     @Test
     public void testGetAllSupplies() throws Exception {
         DentalSupply supply1 = new DentalSupply("Resin A", DentalSupplyCategory.Resin, 100, 10);
@@ -38,7 +43,8 @@ public class InventoryControllerTest {
 
         when(inventoryService.getAllSupplies()).thenReturn(Arrays.asList(supply1, supply2));
 
-        mockMvc.perform(get("/inventory"))
+        mockMvc.perform(get("/inventory")
+                .header("Authorization", getAuthHeader("greg", "turnquist")))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[0].name").value("Resin A"))
                 .andExpect(jsonPath("$[1].name").value("Anesthesia B"));
@@ -47,10 +53,20 @@ public class InventoryControllerTest {
     @Test
     public void testAddOrUpdateSupply() throws Exception {
         mockMvc.perform(post("/inventory")
+                .header("Authorization", getAuthHeader("ollie", "gierke"))
                 .contentType(MediaType.APPLICATION_JSON)
                 .content("{\"name\":\"New Resin\",\"category\":\"Resin\",\"purchaseCost\":120,\"quantity\":5}"))
                 .andExpect(status().isOk());
 
         verify(inventoryService, times(1)).addSupply(any(DentalSupply.class));
+    }
+
+    @Test
+    public void testAddOrUpdateSupplyUnauthorized() throws Exception {
+        mockMvc.perform(post("/inventory")
+                .header("Authorization", getAuthHeader("greg", "turnquist"))
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("{\"name\":\"New Resin\",\"category\":\"Resin\",\"purchaseCost\":120,\"quantity\":5}"))
+                .andExpect(status().isForbidden());
     }
 }

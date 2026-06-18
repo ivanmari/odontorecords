@@ -14,7 +14,7 @@ import { Installment } from './installment';
   providedIn: 'root'
 })
 export class PatientService {
-  private baseUrl = '';
+  private baseUrl = 'http://127.0.0.1:8080';
   private patientsUrl = '/patients';
   private patientUrl = '/patient';
 
@@ -22,6 +22,7 @@ export class PatientService {
 
   private getHeaders(): HttpHeaders {
     return new HttpHeaders({
+      'Authorization': 'Basic ' + btoa('greg:turnquist'),
       'Content-Type': 'application/json',
       'Accept': 'application/json'
     });

@@ -8,12 +8,13 @@ import { DentalSupply } from './inventory';
   providedIn: 'root'
 })
 export class InventoryService {
-  private baseUrl = '/inventory';
+  private baseUrl = 'http://127.0.0.1:8080/inventory';
 
   constructor(private http: HttpClient) {}
 
   private getHeaders(): HttpHeaders {
     return new HttpHeaders({
+      'Authorization': 'Basic ' + btoa('ollie:gierke'),
       'Content-Type': 'application/json',
       'Accept': 'application/json'
     });
