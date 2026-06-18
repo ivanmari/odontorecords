@@ -9,6 +9,7 @@ import { ToothDetails } from './tooth-details.component';
 import { PatientSelect } from './patient-select.component';
 import { PracticeEdit } from './practice-edit.component';
 import { Mouth } from './mouth.component';
+import { ToothEditDialog } from './tooth-edit-dialog.component';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatInputModule } from '@angular/material/input';
@@ -22,6 +23,11 @@ import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTabsModule } from '@angular/material/tabs';
 import { MatGridListModule } from '@angular/material/grid-list';
+import { MatDialogModule } from '@angular/material/dialog';
+import { MatSelectModule } from '@angular/material/select';
+import { MatRadioModule } from '@angular/material/radio';
+import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatButtonToggleModule } from '@angular/material/button-toggle';
 
 // Layout Directives
 @Directive({
@@ -69,7 +75,12 @@ export class FlexDirective {
     MatSidenavModule,
     MatIconModule,
     MatTabsModule,
-    MatGridListModule
+    MatGridListModule,
+    MatDialogModule,
+    MatSelectModule,
+    MatRadioModule,
+    MatCheckboxModule,
+    MatButtonToggleModule
   ],
   declarations: [
     AppComponent,
@@ -78,6 +89,7 @@ export class FlexDirective {
     ToothDetails,
     PracticeEdit,
     Mouth,
+    ToothEditDialog,
     FlexDirective,
     LayoutDirective
   ],

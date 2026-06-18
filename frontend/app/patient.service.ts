@@ -116,9 +116,47 @@ export class PatientService {
       );
   }
 
+  public addGeneralPractice(patientId: string, practice: Practice, affectedPieces: string): Observable<boolean> {
+    console.log(`Adding general practice for patient: ${patientId}`);
+    const body = {
+        patientId: patientId,
+        code: practice.code,
+        deliveryDate: practice.deliveryDate || new Date().toISOString(),
+        price: practice.price || 0,
+        comments: practice.comments || '',
+        preexisting: false,
+        affectedPieces: affectedPieces
+    };
+    return this.http.post(this.baseUrl + this.patientUrl + "/" + patientId + "/practice", body, { headers: this.getHeaders(), observe: 'response' })
+      .pipe(
+        map(res => res.ok),
+        catchError(this.handleError)
+      );
+  }
+
   public delPatient(patientId: string): Observable<boolean> {
     console.log("Deleting patient:", patientId);
     return this.http.delete(this.baseUrl + this.patientUrl + "/" + patientId, { headers: this.getHeaders(), observe: 'response' })
+      .pipe(
+        map(res => res.ok),
+        catchError(this.handleError)
+      );
+  }
+
+  public updateToothStatus(patientId: string, toothId: number, status: string, planned: boolean): Observable<boolean> {
+    console.log(`Updating tooth ${toothId} status to ${status} for patient ${patientId}`);
+    const params = new HttpParams().set('status', status).set('planned', planned.toString());
+    return this.http.put(this.baseUrl + this.patientUrl + "/" + patientId + "/tooth/" + toothId + "/status", null, { headers: this.getHeaders(), params, observe: 'response' })
+      .pipe(
+        map(res => res.ok),
+        catchError(this.handleError)
+      );
+  }
+
+  public updateToothFaceStatus(patientId: string, toothId: number, faceName: string, filled: boolean, planned: boolean): Observable<boolean> {
+    console.log(`Updating tooth ${toothId} face ${faceName} status for patient ${patientId}`);
+    const params = new HttpParams().set('filled', filled.toString()).set('planned', planned.toString());
+    return this.http.put(this.baseUrl + this.patientUrl + "/" + patientId + "/tooth/" + toothId + "/face/" + faceName, null, { headers: this.getHeaders(), params, observe: 'response' })
       .pipe(
         map(res => res.ok),
         catchError(this.handleError)

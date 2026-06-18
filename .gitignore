@@ -12,6 +12,8 @@
 
 target/*
 node_modules/*
+**/node_modules/*
+**/dist/*
 
 # BlueJ files
 *.ctxt
