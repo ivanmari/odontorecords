@@ -156,44 +156,18 @@ export class Mouth
 	
 	getTooth(toothId: number): Tooth
 	{
-		let tooth: Tooth = null;
-
 		if(this.mouthData)
 		{
-			let index: number;
-			
-			if(toothId < 21)
-			{
-				index = toothId - 10;
+			// Check permanent teeth
+			if (this.mouthData.permanentTeeth && this.mouthData.permanentTeeth[toothId.toString()]) {
+				return this.mouthData.permanentTeeth[toothId.toString()];
 			}
-			else if(toothId < 31)
-			{
-				index = toothId - 20 + 8;
+			// Check temporary teeth
+			if (this.mouthData.temporaryTeeth && this.mouthData.temporaryTeeth[toothId.toString()]) {
+				return this.mouthData.temporaryTeeth[toothId.toString()];
 			}
-			else if(toothId < 41)
-			{
-				index = toothId - 30 + 16;
-			}
-			else
-			{
-				index = toothId - 40 + 24;
-			}
-			
-			index = index - 1;
-			
-			//console.log("toothId = " + toothId + " index = " + index);
-			let pTeethMap: Map<number, Tooth> = this.mouthData.permanentTeeth;	
-			tooth = pTeethMap[index.toString()];
-			
-			return tooth;
 		}
-/*	
-TODO scope problem here for tooth var
-
-		console.log("getTooth returning: ");
-		console.log(tooth);
-*/	
-		return tooth;
+		return null;
 	}
 	
 	getStatus(toothId: number): string
