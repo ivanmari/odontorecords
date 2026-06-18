@@ -48,6 +48,9 @@ public class PatientFullInfo {
         if(patient.getBirthday() != null) {
             this.birthday = patient.getBirthday().toString();
         }
+        if (patient.getFirstVisit() != null) {
+            this.firstVisit = patient.getFirstVisit().toString();
+        }
         this.phone = patient.getPhone();
 
         Address address = patient.getAddress().orElse(new Address());
@@ -175,6 +178,9 @@ public class PatientFullInfo {
     public Optional<Patient> getPatient(AccountService accountService, PracticeService practiceService){
         Patient patient = new Patient(accountService, practiceService);
 
+        if (this.id != null) {
+            patient.setId(this.id);
+        }
         patient.setDni(this.dni);
         patient.setFirstName(this.firstName);
         patient.setLastName(this.lastName);
@@ -183,6 +189,9 @@ public class PatientFullInfo {
         patient.setSocialId(this.socialId);
         if(this.birthday != null) {
             patient.setBirthday(Instant.parse(this.birthday));
+        }
+        if (this.firstVisit != null) {
+            patient.setFirstVisit(Instant.parse(this.firstVisit));
         }
         patient.setPhone(this.phone);
         Address address = new Address();
