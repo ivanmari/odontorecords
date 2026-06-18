@@ -4,6 +4,7 @@ import { PatientBasicInfo } from './patientbasic';
 import { HttpClient } from '@angular/common/http';
 import { Charge } from './charge';
 import { Installment } from './installment';
+import { map } from 'rxjs/operators';
 
 @Component({
   selector: 'accounting-module',
@@ -185,10 +186,12 @@ export class AccountingComponent implements OnInit {
 
   loadHistory() {
     this.http.get<any>('/patient/' + this.selectedPatientId + '/account/charges')
-      .subscribe(data => this.charges = data.content || []);
+      .pipe(map(data => data.content || data))
+      .subscribe(data => this.charges = data);
 
     this.http.get<any>('/patient/' + this.selectedPatientId + '/account/installments')
-      .subscribe(data => this.installments = data.content || []);
+      .pipe(map(data => data.content || data))
+      .subscribe(data => this.installments = data);
   }
 
   toggleAddCharge() {
