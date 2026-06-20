@@ -1,4 +1,4 @@
-import { Component, Input, Output, EventEmitter, OnChanges, SimpleChanges } from '@angular/core';
+import { Component, Input, Output, EventEmitter, OnChanges, SimpleChanges, ViewChildren, QueryList } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Patient } from './patient'
@@ -35,7 +35,7 @@ import { Mouth } from './mouth.component'
 				</div>
 			</mat-card>
 
-			<mat-tab-group (selectedHeaderChange)="onTabChange($event)" [(selectedIndex)]="selectedTabIndex">
+			<mat-tab-group (selectedIndexChange)="onTabChange($event)" [selectedIndex]="selectedTabIndex">
 				<!-- VIEW MODE TAB -->
 				<mat-tab label="Patient Profile">
 					<div layout="row" layout-gap="20px" class="tab-content">
@@ -300,6 +300,8 @@ export class PatientDetails implements OnChanges
 
 	@Output()
 	back = new EventEmitter<void>();
+
+	@ViewChildren(Mouth) mouthComponents: QueryList<Mouth>;
 	
 	patientFull : Patient;
 	
@@ -312,9 +314,18 @@ export class PatientDetails implements OnChanges
 	
 	constructor(private patientService : PatientService, private snackBar: MatSnackBar) {}
 	
-	onTabChange(event: any) {
+	onTabChange(index: number) {
+		this.selectedTabIndex = index;
 		// Sync isEditing with tab selection
 		this.isEditing = (this.selectedTabIndex === 1);
+
+		// If switching to Profile tab, refresh data to show potential changes from Edit tab
+		if (this.selectedTabIndex === 0 && this.patientId) {
+			this.getFullPatient(this.patientId);
+			if (this.mouthComponents) {
+				this.mouthComponents.forEach(m => m.getMouth(this.patientId));
+			}
+		}
 	}
 
 	getFullPatient(patientId : string){
