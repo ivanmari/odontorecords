@@ -65,8 +65,7 @@ class PatientController {
 
     @RequestMapping(value = "/patient/{id}/graphmouth", method = RequestMethod.GET)
     public Mouth getPatientGraphicMouth(@PathVariable String id, @RequestParam(value="closingDate", defaultValue="") String closingDateStr, @RequestParam(value="healthProvider", defaultValue="Generic") String healthProvider){
-        Patient patient = patientService.findByPatientId(id).orElseThrow(PatientIdNotFoundException::new);
-        return patient.getMouth();
+        return patientService.getMouth(id);
     }
 
 

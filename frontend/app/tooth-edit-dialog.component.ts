@@ -174,6 +174,14 @@ export class ToothEditDialog implements OnInit {
     practice.comments = '';
 
     let affected = `${this.data.tooth.toothNumber}`;
+    if (this.data.tooth.status === 'BridgeStart') {
+      affected += 'BS';
+    } else if (this.data.tooth.status === 'BridgeIntermediate') {
+      affected += 'BI';
+    } else if (this.data.tooth.status === 'BridgeEnd') {
+      affected += 'BE';
+    }
+
     if (this.data.tooth.status === 'Filling' && this.data.tooth.faces) {
       const faces = this.data.tooth.faces.filter(f => f.filled).map(f => f.faceName[0].toLowerCase()).join(':');
       if (faces) {

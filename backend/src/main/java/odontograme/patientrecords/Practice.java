@@ -257,6 +257,60 @@ public class Practice {
         this.affectedPieces = pieces;
     }
 
+    public static class AffectedPiece {
+        public int toothNumber;
+        public List<Tooth.ToothFaceName> faces = new ArrayList<>();
+        public Tooth.ToothStatus bridgeStatus = null;
+
+        public AffectedPiece(int toothNumber) {
+            this.toothNumber = toothNumber;
+        }
+    }
+
+    public List<AffectedPiece> getAffectedPiecesList() {
+        List<AffectedPiece> result = new ArrayList<>();
+        if (affectedPieces == null || affectedPieces.isEmpty()) {
+            return result;
+        }
+
+        String[] pieces = affectedPieces.split(",");
+        for (String piece : pieces) {
+            piece = piece.trim();
+            if (piece.isEmpty()) continue;
+
+            Pattern pattern = Pattern.compile("^(\\d\\d)(BS|BI|BE)?(?:\\s+([a-zA-Z:]+))?");
+            Matcher matcher = pattern.matcher(piece);
+            if (matcher.find()) {
+                int toothNum = Integer.parseInt(matcher.group(1));
+                AffectedPiece ap = new AffectedPiece(toothNum);
+
+                String bridgeSuffix = matcher.group(2);
+                if (bridgeSuffix != null) {
+                    switch (bridgeSuffix) {
+                        case "BS": ap.bridgeStatus = Tooth.ToothStatus.BridgeStart; break;
+                        case "BI": ap.bridgeStatus = Tooth.ToothStatus.BridgeIntermediate; break;
+                        case "BE": ap.bridgeStatus = Tooth.ToothStatus.BridgeEnd; break;
+                    }
+                }
+
+                String facesStr = matcher.group(3);
+                if (facesStr != null) {
+                    for (String face : facesStr.split(":")) {
+                        switch (face.toUpperCase()) {
+                            case "O": ap.faces.add(Tooth.ToothFaceName.Oclusal); break;
+                            case "M": ap.faces.add(Tooth.ToothFaceName.Mesial); break;
+                            case "D": ap.faces.add(Tooth.ToothFaceName.Distal); break;
+                            case "L": ap.faces.add(Tooth.ToothFaceName.Lingual); break;
+                            case "V": ap.faces.add(Tooth.ToothFaceName.Vestibular); break;
+                        }
+                    }
+                }
+                result.add(ap);
+            }
+        }
+        return result;
+    }
+
     public String getPatientId() {
         return patientId;
     }
