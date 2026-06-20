@@ -121,12 +121,6 @@ class PatientController {
         return ResponseEntity.ok().build();
     }
 
-    @RequestMapping(value = "/patient/{patientId}/tooth/{toothId}/faces", method = RequestMethod.PUT)
-    public ResponseEntity<?> updateToothFacesStatus(@PathVariable String patientId, @PathVariable int toothId, @RequestBody List<odontograme.patientrecords.odontogram.ToothFace> faces) {
-        patientService.updateToothFacesStatus(patientId, toothId, faces);
-        return ResponseEntity.ok().build();
-    }
-
     public void setPracticeCodesRepository(PracticeCodesRepository practiceCodesRepository) {
         this.practiceCodesRepository = practiceCodesRepository;
     }

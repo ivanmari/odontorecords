@@ -54,15 +54,6 @@ export class PatientService {
       );
   }
 
-  public updateToothFacesStatus(patientId: string, toothId: number, faces: ToothFace[]): Observable<boolean> {
-    console.log(`Updating tooth ${toothId} faces status for patient ${patientId}`);
-    return this.http.put(this.baseUrl + this.patientUrl + "/" + patientId + "/tooth/" + toothId + "/faces", faces, { observe: 'response' })
-      .pipe(
-        map(res => res.ok),
-        catchError(this.handleError)
-      );
-  }
-
   public deleteFacePractice(practiceId: string, patientId: string, tooth: number, face: string): Observable<boolean> {
     console.log(`Deleting face practice from tooth: ${tooth} face: ${face} for patient: ${patientId}`);
     return this.http.delete(this.baseUrl + this.patientUrl + "/" + patientId + "/" + tooth + "/" + face + "/practice" + practiceId, { observe: 'response' })

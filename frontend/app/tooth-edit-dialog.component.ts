@@ -141,15 +141,16 @@ export class ToothEditDialog implements OnInit {
     ).pipe(
       switchMap(() => {
         if (this.data.tooth.status === 'Filling' && this.data.tooth.faces && this.data.tooth.faces.length > 0) {
-          const facesToUpdate = this.data.tooth.faces.map(f => ({
-            ...f,
-            planned: this.data.tooth.planned
-          }));
-          return this.patientService.updateToothFacesStatus(
-            this.data.patientId,
-            this.data.tooth.toothNumber,
-            facesToUpdate
+          const faceUpdates = this.data.tooth.faces.map(face =>
+            this.patientService.updateToothFaceStatus(
+              this.data.patientId,
+              this.data.tooth.toothNumber,
+              face.faceName,
+              face.filled,
+              this.data.tooth.planned
+            )
           );
+          return forkJoin(faceUpdates);
         }
         return of(true);
       })
