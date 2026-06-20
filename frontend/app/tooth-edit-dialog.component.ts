@@ -54,7 +54,7 @@ import { switchMap } from 'rxjs/operators';
           <div *ngIf="data.tooth.status === 'Filling'">
             <h4 style="margin: 0 0 10px 0;">Affected Faces</h4>
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 5px;">
-              <mat-checkbox *ngFor="let face of data.tooth.faces" [(ngModel)]="face.filled">
+              <mat-checkbox *ngFor="let face of data.tooth.faces" [(ngModel)]="face.filled" (change)="onFaceCheckboxChange(face)">
                 {{face.faceName}}
               </mat-checkbox>
             </div>
@@ -73,6 +73,28 @@ import { switchMap } from 'rxjs/operators';
             <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
             <mat-datepicker #picker></mat-datepicker>
           </mat-form-field>
+        </div>
+      </div>
+
+      <div style="margin-top: 20px;" *ngIf="toothPractices.length > 0">
+        <h3 style="margin-bottom: 10px; border-bottom: 1px solid #eee; padding-bottom: 5px;">Clinical History</h3>
+        <div style="max-height: 150px; overflow-y: auto;">
+          <table style="width: 100%; border-collapse: collapse;">
+            <thead>
+              <tr style="text-align: left; background: #f5f5f5;">
+                <th style="padding: 8px; border: 1px solid #ddd;">Date</th>
+                <th style="padding: 8px; border: 1px solid #ddd;">Practice</th>
+                <th style="padding: 8px; border: 1px solid #ddd;">Comments</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let p of toothPractices">
+                <td style="padding: 8px; border: 1px solid #ddd;">{{p.deliveryDate | date:'shortDate'}}</td>
+                <td style="padding: 8px; border: 1px solid #ddd;">{{p.code}}</td>
+                <td style="padding: 8px; border: 1px solid #ddd;">{{p.comments}}</td>
+              </tr>
+            </tbody>
+          </table>
         </div>
       </div>
     </mat-dialog-content>
@@ -97,6 +119,7 @@ import { switchMap } from 'rxjs/operators';
 })
 export class ToothEditDialog implements OnInit {
   eventDate: Date = new Date();
+  toothPractices: Practice[] = [];
 
   constructor(
     public dialogRef: MatDialogRef<ToothEditDialog>,
@@ -109,13 +132,31 @@ export class ToothEditDialog implements OnInit {
 
   ngOnInit() {
     if (!this.data.tooth.status) this.data.tooth.status = 'Healthy';
+    this.loadToothHistory();
+  }
+
+  loadToothHistory() {
+    this.patientService.getPatientPractices(this.data.patientId).subscribe(practices => {
+      this.toothPractices = (practices || []).filter(p => {
+        if (!p.affectedPieces) return false;
+        // Check if tooth number is in affectedPieces
+        const toothNumStr = this.data.tooth.toothNumber.toString();
+        const parts = p.affectedPieces.split(',').map(s => s.trim());
+        return parts.some(part => {
+           // Match exactly the tooth number or tooth number followed by a non-digit
+           const match = part.match(/^(\d+)/);
+           return match && match[1] === toothNumStr;
+        });
+      });
+    });
   }
 
   getFaceColor(faceName: string): string {
     if (!this.data.tooth.faces) return 'white';
     const face = this.data.tooth.faces.find(f => f.faceName === faceName);
     if (face && face.filled) {
-      return this.data.tooth.planned || face.planned ? 'blue' : 'red';
+      const isPlanned = !!face.planned;
+      return isPlanned ? 'blue' : 'red';
     }
     return 'white';
   }
@@ -128,6 +169,15 @@ export class ToothEditDialog implements OnInit {
     const face = this.data.tooth.faces.find(f => f.faceName === faceName);
     if (face) {
       face.filled = !face.filled;
+      if (face.filled) {
+        face.planned = this.data.tooth.planned;
+      }
+    }
+  }
+
+  onFaceCheckboxChange(face: ToothFace) {
+    if (face.filled) {
+      face.planned = this.data.tooth.planned;
     }
   }
 
@@ -143,11 +193,18 @@ export class ToothEditDialog implements OnInit {
 
   private applyOdontogramChanges(): Observable<any> {
     const dateStr = this.eventDate ? this.eventDate.toISOString() : undefined;
+
+    // For Fillings, a tooth is planned if it has any planned faces
+    let isToothPlanned = this.data.tooth.planned;
+    if (this.data.tooth.status === 'Filling' && this.data.tooth.faces) {
+      isToothPlanned = this.data.tooth.faces.some(f => f.filled && f.planned);
+    }
+
     return this.patientService.updateToothStatus(
       this.data.patientId,
       this.data.tooth.toothNumber,
       this.data.tooth.status,
-      this.data.tooth.planned,
+      isToothPlanned,
       dateStr
     ).pipe(
       switchMap(() => {
@@ -157,7 +214,7 @@ export class ToothEditDialog implements OnInit {
             this.data.tooth.toothNumber,
             this.data.tooth.faces,
             dateStr,
-            this.data.tooth.planned
+            undefined
           );
         }
         return of(true);
@@ -191,7 +248,12 @@ export class ToothEditDialog implements OnInit {
     }
 
     if (this.data.tooth.status === 'Filling' && this.data.tooth.faces) {
-      const faces = this.data.tooth.faces.filter(f => f.filled).map(f => f.faceName[0].toLowerCase()).join(':');
+      // Only include faces that match the 'done' status of the practice being saved
+      const isPlanned = !practice.done;
+      const faces = this.data.tooth.faces
+        .filter(f => f.filled && (!!f.planned === isPlanned))
+        .map(f => f.faceName[0].toLowerCase())
+        .join(':');
       if (faces) {
         affected += ` ${faces}`;
       }

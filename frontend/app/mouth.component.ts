@@ -197,12 +197,13 @@ export class Mouth
 			
 			for( let face of faces)
 			{
-				if(faceToPaint === face["faceName"])
+				if(faceToPaint === face.faceName)
 				{
-					if (face["filled"]) {
-						return (tooth.planned || face.planned) ? 'blue' : 'red';
+					if (face.filled) {
+						const isPlanned = !!face.planned;
+						return isPlanned ? 'blue' : 'red';
 					}
-					color = face["color"] || "white";
+					color = face.color || "white";
 				}
 			}
 		}
