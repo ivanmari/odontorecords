@@ -117,6 +117,7 @@ export class PatientService {
         price: practice.price || 0,
         comments: practice.comments || '',
         preexisting: false,
+        done: practice.done,
         affectedPieces: affectedPieces
     };
     return this.http.post(this.baseUrl + this.patientUrl + "/" + patientId + "/practice", body, { observe: 'response' })

@@ -18,6 +18,7 @@ public class PracticeRest {
     private int price;
     private String comments;
     private Boolean isPreexisting;
+    private Boolean done;
     private String affectedPieces;
 
     public PracticeRest(){}
@@ -33,6 +34,10 @@ public class PracticeRest {
 
     public String getPatientId() {
         return patientId;
+    }
+
+    public void setPatientId(String patientId) {
+        this.patientId = patientId;
     }
 
     public String getCode() {
@@ -71,6 +76,14 @@ public class PracticeRest {
 
     public void setPreexisting(Boolean preexisting) { isPreexisting = preexisting; }
 
+    public Boolean getDone() {
+        return done;
+    }
+
+    public void setDone(Boolean done) {
+        this.done = done;
+    }
+
     public String getAffectedPieces() {
         return affectedPieces;
     }
@@ -82,10 +95,15 @@ public class PracticeRest {
     @JsonIgnore
     public Practice getPractice (){
         System.out.println("getPractice: deliveryDate = " + this.deliveryDate);
-        Practice practice = new Practice(Practice.Code.valueOf(this.code), Instant.parse(this.deliveryDate), this.price, this.isPreexisting != null ? this.isPreexisting : false);
+        Instant delivery = (this.deliveryDate != null && !this.deliveryDate.isEmpty()) ? Instant.parse(this.deliveryDate) : null;
+        Practice practice = new Practice(Practice.Code.valueOf(this.code), delivery, this.price, this.isPreexisting != null ? this.isPreexisting : false);
 
+        practice.setPatientId(this.patientId);
         practice.setComments(this.comments);
         practice.setPieces(this.affectedPieces);
+        if (this.done != null) {
+            practice.setDone(this.done);
+        }
 
         return practice;
     }

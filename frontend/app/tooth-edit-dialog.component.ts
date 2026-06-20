@@ -1,9 +1,11 @@
 import { Component, Inject, OnInit } from '@angular/core';
-import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
+import { MAT_DIALOG_DATA, MatDialogRef, MatDialog } from '@angular/material/dialog';
 import { PatientService } from './patient.service';
 import { Tooth, ToothFace } from './mouthdata';
 import { Practice } from './practice';
-import { forkJoin, of } from 'rxjs';
+import { PracticeDialog } from './practice-dialog.component';
+import { forkJoin, of, Observable } from 'rxjs';
+import { switchMap } from 'rxjs/operators';
 
 @Component({
   selector: 'tooth-edit-dialog',
@@ -90,7 +92,8 @@ export class ToothEditDialog implements OnInit {
   constructor(
     public dialogRef: MatDialogRef<ToothEditDialog>,
     @Inject(MAT_DIALOG_DATA) public data: { tooth: Tooth, patientId: string },
-    private patientService: PatientService
+    private patientService: PatientService,
+    private dialog: MatDialog
   ) {
     console.log("Opening ToothEditDialog for tooth:", data.tooth.toothNumber);
   }
@@ -129,30 +132,35 @@ export class ToothEditDialog implements OnInit {
     this.dialogRef.close();
   }
 
-  saveStatus() {
-    this.patientService.updateToothStatus(
+  private applyOdontogramChanges(): Observable<any> {
+    return this.patientService.updateToothStatus(
       this.data.patientId,
       this.data.tooth.toothNumber,
       this.data.tooth.status,
       this.data.tooth.planned
-    ).subscribe(() => {
-      if (this.data.tooth.status === 'Filling' && this.data.tooth.faces && this.data.tooth.faces.length > 0) {
-        const faceUpdates = this.data.tooth.faces.map(face =>
-          this.patientService.updateToothFaceStatus(
-            this.data.patientId,
-            this.data.tooth.toothNumber,
-            face.faceName,
-            face.filled,
-            this.data.tooth.planned
-          )
-        );
-        forkJoin(faceUpdates).subscribe({
-            next: () => this.dialogRef.close(true),
-            error: () => this.dialogRef.close(true) // Close anyway on error for now
-        });
-      } else {
-        this.dialogRef.close(true);
-      }
+    ).pipe(
+      switchMap(() => {
+        if (this.data.tooth.status === 'Filling' && this.data.tooth.faces && this.data.tooth.faces.length > 0) {
+          const faceUpdates = this.data.tooth.faces.map(face =>
+            this.patientService.updateToothFaceStatus(
+              this.data.patientId,
+              this.data.tooth.toothNumber,
+              face.faceName,
+              face.filled,
+              this.data.tooth.planned
+            )
+          );
+          return forkJoin(faceUpdates);
+        }
+        return of(true);
+      })
+    );
+  }
+
+  saveStatus() {
+    this.applyOdontogramChanges().subscribe({
+      next: () => this.dialogRef.close(true),
+      error: () => this.dialogRef.close(true)
     });
   }
 
@@ -162,6 +170,8 @@ export class ToothEditDialog implements OnInit {
     practice.code = this.mapStatusToCode(this.data.tooth.status);
     practice.done = !this.data.tooth.planned;
     practice.deliveryDate = practice.done ? new Date().toISOString() : null;
+    practice.price = 0;
+    practice.comments = '';
 
     let affected = `${this.data.tooth.toothNumber}`;
     if (this.data.tooth.status === 'Filling' && this.data.tooth.faces) {
@@ -171,8 +181,25 @@ export class ToothEditDialog implements OnInit {
       }
     }
 
-    this.patientService.addGeneralPractice(this.data.patientId, practice, affected).subscribe(() => {
-        this.dialogRef.close(true);
+    const dialogRef = this.dialog.open(PracticeDialog, {
+      width: '400px',
+      data: { practice: JSON.parse(JSON.stringify(practice)) }
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        // Use the edited practice details
+        const finalPractice = result as Practice;
+        // Also update planned status based on 'done' flag
+        this.data.tooth.planned = !finalPractice.done;
+
+        this.patientService.addGeneralPractice(this.data.patientId, finalPractice, affected).pipe(
+          switchMap(() => this.applyOdontogramChanges())
+        ).subscribe({
+          next: () => this.dialogRef.close(true),
+          error: () => this.dialogRef.close(true)
+        });
+      }
     });
   }
 

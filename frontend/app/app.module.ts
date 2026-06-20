@@ -11,6 +11,7 @@ import { AccountingComponent } from './accounting.component';
 import { PracticeEdit } from './practice-edit.component';
 import { Mouth } from './mouth.component';
 import { ToothEditDialog } from './tooth-edit-dialog.component';
+import { PracticeDialog } from './practice-dialog.component';
 import { AuthInterceptor } from './auth.interceptor';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
@@ -96,6 +97,7 @@ export class FlexDirective {
     PracticeEdit,
     Mouth,
     ToothEditDialog,
+    PracticeDialog,
     FlexDirective,
     LayoutDirective,
     InventoryListComponent
