@@ -18,6 +18,7 @@ public class PracticeRest {
     private int price;
     private String comments;
     private Boolean isPreexisting;
+    private Boolean done;
     private String affectedPieces;
 
     public PracticeRest(){}
@@ -75,6 +76,14 @@ public class PracticeRest {
 
     public void setPreexisting(Boolean preexisting) { isPreexisting = preexisting; }
 
+    public Boolean getDone() {
+        return done;
+    }
+
+    public void setDone(Boolean done) {
+        this.done = done;
+    }
+
     public String getAffectedPieces() {
         return affectedPieces;
     }
@@ -92,6 +101,9 @@ public class PracticeRest {
         practice.setPatientId(this.patientId);
         practice.setComments(this.comments);
         practice.setPieces(this.affectedPieces);
+        if (this.done != null) {
+            practice.setDone(this.done);
+        }
 
         return practice;
     }
