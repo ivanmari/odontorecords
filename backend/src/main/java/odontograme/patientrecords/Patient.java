@@ -6,6 +6,7 @@ import odontograme.bookkeeping.Installment;
 import odontograme.bookkeeping.exceptions.InstallmentPresentException;
 import odontograme.bookkeeping.exceptions.InstallmentIdNotFoundException;
 import odontograme.patientrecords.odontogram.Mouth;
+import odontograme.patientrecords.odontogram.ToothStatusEvent;
 import odontograme.patientrecords.personaldata.Address;
 import odontograme.service.PracticeService;
 import org.bson.types.ObjectId;
@@ -47,6 +48,8 @@ public class Patient {
     private String comments;
     private Instant firstVisit;
     private Mouth mouth;
+
+    private List<ToothStatusEvent> statusHistory = new java.util.ArrayList<>();
 
     //This list represents the status of each tooth at a particular point in time.
     private List<String> mouthSnapshot;
@@ -226,6 +229,14 @@ public class Patient {
 
     public void setMouth(Mouth mouth) {
         this.mouth = mouth;
+    }
+
+    public List<ToothStatusEvent> getStatusHistory() {
+        return statusHistory;
+    }
+
+    public void setStatusHistory(List<ToothStatusEvent> statusHistory) {
+        this.statusHistory = statusHistory;
     }
 
 

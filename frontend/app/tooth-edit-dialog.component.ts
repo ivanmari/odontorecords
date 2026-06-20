@@ -66,6 +66,13 @@ import { switchMap } from 'rxjs/operators';
               <mat-radio-button [value]="true">Planned (Blue)</mat-radio-button>
             </mat-radio-group>
           </div>
+
+          <mat-form-field appearance="fill" style="width: 100%;">
+            <mat-label>Date</mat-label>
+            <input matInput [matDatepicker]="picker" [(ngModel)]="eventDate">
+            <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+            <mat-datepicker #picker></mat-datepicker>
+          </mat-form-field>
         </div>
       </div>
     </mat-dialog-content>
@@ -89,6 +96,8 @@ import { switchMap } from 'rxjs/operators';
   `]
 })
 export class ToothEditDialog implements OnInit {
+  eventDate: Date = new Date();
+
   constructor(
     public dialogRef: MatDialogRef<ToothEditDialog>,
     @Inject(MAT_DIALOG_DATA) public data: { tooth: Tooth, patientId: string },
@@ -133,24 +142,23 @@ export class ToothEditDialog implements OnInit {
   }
 
   private applyOdontogramChanges(): Observable<any> {
+    const dateStr = this.eventDate ? this.eventDate.toISOString() : undefined;
     return this.patientService.updateToothStatus(
       this.data.patientId,
       this.data.tooth.toothNumber,
       this.data.tooth.status,
-      this.data.tooth.planned
+      this.data.tooth.planned,
+      dateStr
     ).pipe(
       switchMap(() => {
         if (this.data.tooth.status === 'Filling' && this.data.tooth.faces && this.data.tooth.faces.length > 0) {
-          const faceUpdates = this.data.tooth.faces.map(face =>
-            this.patientService.updateToothFaceStatus(
-              this.data.patientId,
-              this.data.tooth.toothNumber,
-              face.faceName,
-              face.filled,
-              this.data.tooth.planned
-            )
+          return this.patientService.updateToothFacesStatus(
+            this.data.patientId,
+            this.data.tooth.toothNumber,
+            this.data.tooth.faces,
+            dateStr,
+            this.data.tooth.planned
           );
-          return forkJoin(faceUpdates);
         }
         return of(true);
       })
