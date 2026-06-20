@@ -136,9 +136,10 @@ export class PatientService {
       );
   }
 
-  public updateToothStatus(patientId: string, toothId: number, status: string, planned: boolean): Observable<boolean> {
+  public updateToothStatus(patientId: string, toothId: number, status: string, planned: boolean, date?: string): Observable<boolean> {
     console.log(`Updating tooth ${toothId} status to ${status} for patient ${patientId}`);
-    const params = new HttpParams().set('status', status).set('planned', planned.toString());
+    let params = new HttpParams().set('status', status).set('planned', planned.toString());
+    if (date) params = params.set('date', date);
     return this.http.put(this.baseUrl + this.patientUrl + "/" + patientId + "/tooth/" + toothId + "/status", null, { params, observe: 'response' })
       .pipe(
         map(res => res.ok),
@@ -146,9 +147,10 @@ export class PatientService {
       );
   }
 
-  public updateToothFaceStatus(patientId: string, toothId: number, faceName: string, filled: boolean, planned: boolean): Observable<boolean> {
+  public updateToothFaceStatus(patientId: string, toothId: number, faceName: string, filled: boolean, planned: boolean, date?: string): Observable<boolean> {
     console.log(`Updating tooth ${toothId} face ${faceName} status for patient ${patientId}`);
-    const params = new HttpParams().set('filled', filled.toString()).set('planned', planned.toString());
+    let params = new HttpParams().set('filled', filled.toString()).set('planned', planned.toString());
+    if (date) params = params.set('date', date);
     return this.http.put(this.baseUrl + this.patientUrl + "/" + patientId + "/tooth/" + toothId + "/face/" + faceName, null, { params, observe: 'response' })
       .pipe(
         map(res => res.ok),
