@@ -6,6 +6,7 @@ import odontograme.patientrecords.exceptions.PatientIdNotFoundException;
 import odontograme.patientrecords.Patient;
 import odontograme.patientrecords.odontogram.Mouth;
 import odontograme.patientrecords.odontogram.Tooth;
+import odontograme.patientrecords.odontogram.ToothStatusEvent;
 import odontograme.repository.PracticeCodesRepository;
 import odontograme.service.PracticeService;
 import odontograme.viewmodel.patientrecordview.PatientBasicInfo;
@@ -134,6 +135,12 @@ class PatientController {
             }
         }
         patientService.updateToothFaceStatus(patientId, toothId, faceName, filled, planned, instant);
+        return ResponseEntity.ok().build();
+    }
+
+    @RequestMapping(value = "/patient/{patientId}/tooth/{toothId}/faces", method = RequestMethod.PUT)
+    public ResponseEntity<?> updateToothFacesStatus(@PathVariable String patientId, @PathVariable int toothId, @RequestBody List<ToothStatusEvent> events) {
+        patientService.updateToothFacesStatus(patientId, toothId, events);
         return ResponseEntity.ok().build();
     }
 

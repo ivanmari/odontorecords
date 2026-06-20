@@ -126,6 +126,14 @@ public class PatientServiceImpl implements PatientService {
     }
 
     @Override
+    public void updateToothFacesStatus(String patientId, int toothId, List<ToothStatusEvent> events) {
+        patientRepository.findById(patientId).ifPresent(patient -> {
+            patient.getStatusHistory().addAll(events);
+            patientRepository.save(patient);
+        });
+    }
+
+    @Override
     public void updateToothFaceStatus(String patientId, int toothId, String faceName, boolean filled, boolean planned, Instant date) {
         patientRepository.findById(patientId).ifPresent(patient -> {
             Tooth.ToothFaceName faceEnum = Tooth.ToothFaceName.valueOf(faceName);
