@@ -7,6 +7,8 @@ import odontograme.patientrecords.odontogram.Mouth;
 import odontograme.patientrecords.odontogram.Tooth;
 import odontograme.patientrecords.odontogram.ToothFace;
 import odontograme.repository.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -16,6 +18,7 @@ import java.util.Optional;
 
 @Service
 public class PatientServiceImpl implements PatientService {
+    private static final Logger logger = LoggerFactory.getLogger(PatientServiceImpl.class);
     @Autowired
     private PatientRepository patientRepository;
 
@@ -112,7 +115,24 @@ public class PatientServiceImpl implements PatientService {
                 tooth.setPlanned(planned);
                 patientRepository.save(patient);
             } catch (Exception e) {
-                // Log error or handle appropriately
+                logger.error("Error updating tooth status for patient " + patientId + ", tooth " + toothId, e);
+            }
+        });
+    }
+
+    @Override
+    public void updateToothFacesStatus(String patientId, int toothId, java.util.List<ToothFace> faces) {
+        patientRepository.findById(patientId).ifPresent(patient -> {
+            try {
+                Tooth tooth = patient.getMouth().getToothByID(toothId);
+                for (ToothFace faceUpdate : faces) {
+                    ToothFace face = tooth.getFace(faceUpdate.getFaceName());
+                    face.setFilled(faceUpdate.isFilled());
+                    face.setPlanned(faceUpdate.isPlanned());
+                }
+                patientRepository.save(patient);
+            } catch (Exception e) {
+                logger.error("Error updating tooth faces status for patient " + patientId + ", tooth " + toothId, e);
             }
         });
     }
@@ -128,7 +148,7 @@ public class PatientServiceImpl implements PatientService {
                 face.setPlanned(planned);
                 patientRepository.save(patient);
             } catch (Exception e) {
-                // Log error or handle appropriately
+                logger.error("Error updating tooth face status for patient " + patientId + ", tooth " + toothId + ", face " + faceName, e);
             }
         });
     }

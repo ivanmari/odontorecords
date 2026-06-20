@@ -18,5 +18,6 @@ public interface PatientService {
     void updatePatient(Optional<Patient> patient);
     void updateToothStatus(String patientId, int toothId, Tooth.ToothStatus status, boolean planned);
     void updateToothFaceStatus(String patientId, int toothId, String faceName, boolean filled, boolean planned);
+    void updateToothFacesStatus(String patientId, int toothId, java.util.List<odontograme.patientrecords.odontogram.ToothFace> faces);
     odontograme.patientrecords.odontogram.Mouth getMouth(String patientId);
 }
