@@ -200,7 +200,8 @@ export class Mouth
 				if(faceToPaint === face.faceName)
 				{
 					if (face.filled) {
-						return face.planned ? 'blue' : 'red';
+						const isPlanned = !!face.planned;
+						return isPlanned ? 'blue' : 'red';
 					}
 					color = face.color || "white";
 				}

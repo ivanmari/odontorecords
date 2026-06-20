@@ -155,7 +155,8 @@ export class ToothEditDialog implements OnInit {
     if (!this.data.tooth.faces) return 'white';
     const face = this.data.tooth.faces.find(f => f.faceName === faceName);
     if (face && face.filled) {
-      return face.planned ? 'blue' : 'red';
+      const isPlanned = !!face.planned;
+      return isPlanned ? 'blue' : 'red';
     }
     return 'white';
   }
