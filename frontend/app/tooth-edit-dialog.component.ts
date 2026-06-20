@@ -193,11 +193,18 @@ export class ToothEditDialog implements OnInit {
 
   private applyOdontogramChanges(): Observable<any> {
     const dateStr = this.eventDate ? this.eventDate.toISOString() : undefined;
+
+    // For Fillings, a tooth is planned if it has any planned faces
+    let isToothPlanned = this.data.tooth.planned;
+    if (this.data.tooth.status === 'Filling' && this.data.tooth.faces) {
+      isToothPlanned = this.data.tooth.faces.some(f => f.filled && f.planned);
+    }
+
     return this.patientService.updateToothStatus(
       this.data.patientId,
       this.data.tooth.toothNumber,
       this.data.tooth.status,
-      this.data.tooth.planned,
+      isToothPlanned,
       dateStr
     ).pipe(
       switchMap(() => {
@@ -241,7 +248,12 @@ export class ToothEditDialog implements OnInit {
     }
 
     if (this.data.tooth.status === 'Filling' && this.data.tooth.faces) {
-      const faces = this.data.tooth.faces.filter(f => f.filled).map(f => f.faceName[0].toLowerCase()).join(':');
+      // Only include faces that match the 'done' status of the practice being saved
+      const isPlanned = !practice.done;
+      const faces = this.data.tooth.faces
+        .filter(f => f.filled && (!!f.planned === isPlanned))
+        .map(f => f.faceName[0].toLowerCase())
+        .join(':');
       if (faces) {
         affected += ` ${faces}`;
       }

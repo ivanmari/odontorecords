@@ -18,9 +18,9 @@ public class Filled extends Piece {
 
         for (Tooth.ToothFaceName affectedFaceName : affectedFaces) {
             if (practice.isPlanned()) {
-                this.faces.put(affectedFaceName, Tooth.ToothFaceColor.Red);
-            } else {
                 this.faces.put(affectedFaceName, Tooth.ToothFaceColor.Blue);
+            } else {
+                this.faces.put(affectedFaceName, Tooth.ToothFaceColor.Red);
             }
         }
     }
