@@ -1,4 +1,8 @@
 export class Charge {
-	id: string;
+    id: string;
+    patientId: string;
+    practiceId: string;
+    deliveryDate: any;
+    charge: number;
+    details: string;
 }
-

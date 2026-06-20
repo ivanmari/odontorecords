@@ -1,15 +1,17 @@
 import { NgModule, Directive, HostBinding, Input } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { HttpClientModule } from '@angular/common/http';
+import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
 import { AppComponent } from './app.component';
 import { PatientDetails } from './patient-details.component';
 import { ToothDetails } from './tooth-details.component';
 import { PatientSelect } from './patient-select.component';
+import { AccountingComponent } from './accounting.component';
 import { PracticeEdit } from './practice-edit.component';
 import { Mouth } from './mouth.component';
 import { ToothEditDialog } from './tooth-edit-dialog.component';
+import { AuthInterceptor } from './auth.interceptor';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatInputModule } from '@angular/material/input';
@@ -88,6 +90,7 @@ export class FlexDirective {
   declarations: [
     AppComponent,
     PatientSelect,
+    AccountingComponent,
     PatientDetails,
     ToothDetails,
     PracticeEdit,
@@ -96,6 +99,9 @@ export class FlexDirective {
     FlexDirective,
     LayoutDirective,
     InventoryListComponent
+  ],
+  providers: [
+    { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true }
   ],
   bootstrap: [AppComponent]
 })

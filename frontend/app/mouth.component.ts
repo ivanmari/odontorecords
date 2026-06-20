@@ -149,6 +149,8 @@ export class Mouth
 				{
 					this.getMouth(this.patientId);
 					this.selectedTooth = 11;
+				} else {
+					this.mouthData = null;
 				}
 			}
 		}

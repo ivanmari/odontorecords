@@ -1,6 +1,7 @@
 package odontograme.rest;
 
 import odontograme.service.PatientService;
+import odontograme.service.AccountService;
 import odontograme.bookkeeping.Charge;
 import odontograme.bookkeeping.Installment;
 import odontograme.bookkeeping.exceptions.InstallmentPresentException;
@@ -9,6 +10,8 @@ import odontograme.patientrecords.exceptions.PatientIdNotFoundException;
 import odontograme.patientrecords.Patient;
 import odontograme.viewmodel.bookkeepingview.AccountStat;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -23,15 +26,24 @@ public class BillingController {
     @Autowired
     private PatientService patientService;
 
+    @Autowired
+    private AccountService accountService;
+
     @RequestMapping(value = "/patient/{patientId}/account/charges", method = RequestMethod.POST)
     ResponseEntity<?> addCharge(@PathVariable String patientId, @RequestBody Charge chargeFromRest) {
         ResponseEntity responseEntity = ResponseEntity.noContent().build();
 
         Patient patient = patientService.findByPatientId(patientId).orElseThrow(PatientIdNotFoundException::new);
-        patient.addCharge(chargeFromRest);
+        chargeFromRest.setPatientId(patientId);
+        accountService.addCharge(chargeFromRest);
         responseEntity = ResponseEntity.status(HttpStatus.CREATED).build();
 
         return responseEntity;
+    }
+
+    @RequestMapping(value = "/patient/{patientId}/account/charges", method = RequestMethod.GET)
+    public Page<Charge> getCharges(@PathVariable String patientId, Pageable pageable) {
+        return accountService.getCharges(patientId, pageable);
     }
 
     @RequestMapping(value = "/patient/{patientId}/account/charges/{chargeId}", method = RequestMethod.DELETE)
@@ -54,8 +66,8 @@ public class BillingController {
         ResponseEntity responseEntity = ResponseEntity.noContent().build();
 
         Patient patient = patientService.findByPatientId(patientId).orElseThrow(PatientIdNotFoundException::new);
-
-        patient.addInstallment(installmentFromRest);
+        installmentFromRest.setPatientId(patientId);
+        accountService.addInstallment(installmentFromRest);
 
         URI location = ServletUriComponentsBuilder
                 .fromCurrentRequest().path("/{id}")
@@ -64,6 +76,11 @@ public class BillingController {
         responseEntity = ResponseEntity.created(location).build();
 
         return responseEntity;
+    }
+
+    @RequestMapping(value = "/patient/{patientId}/account/installments", method = RequestMethod.GET)
+    public Page<Installment> getInstallments(@PathVariable String patientId, Pageable pageable) {
+        return accountService.getInstallments(patientId, pageable);
     }
 
     @RequestMapping(value = "/patient/{patientId}/account/installments/{installmentId}", method = RequestMethod.DELETE)
@@ -81,10 +98,10 @@ public class BillingController {
         return responseEntity;
     }
 
-    @RequestMapping(value = "/patient/{id}/balance", method = RequestMethod.GET)
+    @RequestMapping(value = "/patient/{patientId}/balance", method = RequestMethod.GET)
     public AccountStat getPatientBalance(@PathVariable String patientId) {
 
-        int balance = patientService.findByPatientId(patientId).orElseThrow(PatientIdNotFoundException::new).getAccountBalance();;
+        int balance = accountService.getBalance(patientId);
 
         return new AccountStat(balance);
     }
