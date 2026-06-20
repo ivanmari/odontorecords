@@ -88,7 +88,7 @@ import { Installment } from './installment';
                 </div>
               </div>
 
-              <mat-tabs>
+              <mat-tab-group class="history-tabs">
                 <mat-tab label="Charges">
                   <div class="history-list">
                     <table class="history-table">
@@ -133,7 +133,7 @@ import { Installment } from './installment';
                     </table>
                   </div>
                 </mat-tab>
-              </mat-tabs>
+              </mat-tab-group>
             </mat-card-content>
           </mat-card>
         </div>
@@ -157,7 +157,8 @@ import { Installment } from './installment';
     }
     .form-actions { margin-top: 10px; display: flex; justify-content: flex-end; gap: 10px; }
     .main-content { gap: 20px; }
-    .history-list { margin-top: 10px; }
+    .history-tabs { margin-top: 10px; }
+    .history-list { margin-top: 10px; min-height: 100px; }
     .history-table { width: 100%; border-collapse: collapse; }
     .history-table th, .history-table td { padding: 12px; text-align: left; border-bottom: 1px solid #ddd; }
     .history-table th { background-color: #f8f9fa; }
