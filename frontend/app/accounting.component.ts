@@ -76,7 +76,7 @@ import { Installment } from './installment';
                     <mat-select [(ngModel)]="newInstallment.practiceId">
                       <mat-option [value]="null">None</mat-option>
                       <mat-option *ngFor="let p of practices" [value]="p.id">
-                        {{p.deliveryDate | date:'shortDate'}} - {{p.code}} (${{p.price}})
+                        {{p.deliveryDate | date:'shortDate'}} - {{p.code}} ($ {{p.price}})
                       </mat-option>
                     </mat-select>
                   </mat-form-field>
@@ -217,7 +217,10 @@ export class AccountingComponent implements OnInit {
       .subscribe(data => this.installments = data);
 
     this.patientService.getPatientPractices(this.selectedPatientId)
-      .subscribe(data => this.practices = data.filter(p => p.done));
+      .subscribe(data => {
+        const content = (data as any).content || data;
+        this.practices = content.filter(p => p.done);
+      });
   }
 
   toggleAddCharge() {
