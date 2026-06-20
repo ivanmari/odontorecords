@@ -35,6 +35,10 @@ public class PracticeRest {
         return patientId;
     }
 
+    public void setPatientId(String patientId) {
+        this.patientId = patientId;
+    }
+
     public String getCode() {
         return code;
     }
@@ -82,8 +86,10 @@ public class PracticeRest {
     @JsonIgnore
     public Practice getPractice (){
         System.out.println("getPractice: deliveryDate = " + this.deliveryDate);
-        Practice practice = new Practice(Practice.Code.valueOf(this.code), Instant.parse(this.deliveryDate), this.price, this.isPreexisting != null ? this.isPreexisting : false);
+        Instant delivery = (this.deliveryDate != null && !this.deliveryDate.isEmpty()) ? Instant.parse(this.deliveryDate) : null;
+        Practice practice = new Practice(Practice.Code.valueOf(this.code), delivery, this.price, this.isPreexisting != null ? this.isPreexisting : false);
 
+        practice.setPatientId(this.patientId);
         practice.setComments(this.comments);
         practice.setPieces(this.affectedPieces);
 

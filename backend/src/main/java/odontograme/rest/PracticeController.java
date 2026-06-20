@@ -26,6 +26,7 @@ public class PracticeController {
     @RequestMapping(value = "/patient/{patientId}/practice", method = RequestMethod.POST)
     ResponseEntity<?> addPractice(@PathVariable String patientId, @RequestBody PracticeRest input) {
 
+        input.setPatientId(patientId);
         Practice practice = input.getPractice();
         Practice saved_practice = practiceRepository.save(practice);
 
