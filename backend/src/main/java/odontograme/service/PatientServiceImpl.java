@@ -1,7 +1,9 @@
 package odontograme.service;
 
+import odontograme.patientrecords.Practice;
 import odontograme.patientrecords.exceptions.PatientIdNotFoundException;
 import odontograme.patientrecords.Patient;
+import odontograme.patientrecords.odontogram.Mouth;
 import odontograme.patientrecords.odontogram.Tooth;
 import odontograme.patientrecords.odontogram.ToothFace;
 import odontograme.repository.*;
@@ -22,6 +24,9 @@ public class PatientServiceImpl implements PatientService {
 
     @Autowired
     private PracticeService practiceService;
+
+    @Autowired
+    private PracticeRepository practiceRepository;
 
     @Autowired
     private PracticeCodesRepository practiceCodesRepository;
@@ -126,5 +131,80 @@ public class PatientServiceImpl implements PatientService {
                 // Log error or handle appropriately
             }
         });
+    }
+
+    @Override
+    public Mouth getMouth(String patientId) {
+        Patient patient = patientRepository.findById(patientId).orElseThrow(PatientIdNotFoundException::new);
+        Mouth mouth = patient.getMouth();
+
+        java.util.List<Practice> practices = practiceRepository.findByPatientId(patientId, org.springframework.data.domain.Pageable.unpaged()).getContent();
+        java.util.List<Practice> sortedPractices = new java.util.ArrayList<>(practices);
+        sortedPractices.sort(java.util.Comparator.comparing(Practice::getDeliveryDate));
+
+        for (Practice p : sortedPractices) {
+            applyPracticeToMouth(mouth, p);
+        }
+
+        return mouth;
+    }
+
+    private void applyPracticeToMouth(Mouth mouth, Practice practice) {
+        java.util.List<Practice.AffectedPiece> affectedPieces = practice.getAffectedPiecesList();
+        for (Practice.AffectedPiece ap : affectedPieces) {
+            try {
+                Tooth tooth = mouth.getToothByID(ap.toothNumber);
+                boolean isPlanned = practice.isPlanned();
+
+                switch (practice.getCode()) {
+                    case Extraction:
+                        tooth.setStatus(Tooth.ToothStatus.Removed);
+                        tooth.setPlanned(isPlanned);
+                        clearFaces(tooth);
+                        break;
+                    case Implant:
+                        tooth.setStatus(Tooth.ToothStatus.Implant);
+                        tooth.setPlanned(isPlanned);
+                        clearFaces(tooth);
+                        break;
+                    case Crown:
+                        tooth.setStatus(Tooth.ToothStatus.Crown);
+                        tooth.setPlanned(isPlanned);
+                        clearFaces(tooth);
+                        break;
+                    case FillingFront:
+                    case FillingBack:
+                        if (tooth.getStatus() == Tooth.ToothStatus.Healthy ||
+                            tooth.getStatus() == Tooth.ToothStatus.Caries ||
+                            tooth.getStatus() == Tooth.ToothStatus.Filling) {
+                            tooth.setStatus(Tooth.ToothStatus.Filling);
+                            for (Tooth.ToothFaceName faceName : ap.faces) {
+                                ToothFace face = tooth.getFace(faceName);
+                                face.setFilled(true);
+                                face.setPlanned(isPlanned);
+                            }
+                        }
+                        break;
+                    case Bridge:
+                        if (ap.bridgeStatus != null) {
+                            tooth.setStatus(ap.bridgeStatus);
+                            tooth.setPlanned(isPlanned);
+                        }
+                        break;
+                    default:
+                        // Other practices like Cleaning or RootCanal don't necessarily change the tooth status in the odontogram for now
+                        break;
+                }
+            } catch (Exception e) {
+                // Ignore invalid tooth IDs
+            }
+        }
+    }
+
+    private void clearFaces(Tooth tooth) {
+        for (ToothFace face : tooth.getFaces()) {
+            face.setFilled(false);
+            face.setPlanned(false);
+        }
     }
 }
