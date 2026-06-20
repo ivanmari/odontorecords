@@ -23,15 +23,15 @@ import { switchMap } from 'rxjs/operators';
               <polygon points="0,0 5,5 5,15 0,20" [attr.fill]="getFaceColor('Distal')" stroke="navy" stroke-width="0.5" (click)="toggleFace('Distal')"></polygon>
 
               <g *ngIf="data.tooth.status === 'Removed'">
-                <line x1="0" y1="0" x2="20" y2="20" [attr.stroke]="data.tooth.planned ? 'red' : 'blue'" stroke-width="1"></line>
-                <line x1="20" y1="0" x2="0" y2="20" [attr.stroke]="data.tooth.planned ? 'red' : 'blue'" stroke-width="1"></line>
+                <line x1="0" y1="0" x2="20" y2="20" [attr.stroke]="data.tooth.planned ? 'blue' : 'red'" stroke-width="1"></line>
+                <line x1="20" y1="0" x2="0" y2="20" [attr.stroke]="data.tooth.planned ? 'blue' : 'red'" stroke-width="1"></line>
               </g>
-              <circle *ngIf="data.tooth.status === 'Crown'" cx="10" cy="10" r="12" fill="none" [attr.stroke]="data.tooth.planned ? 'red' : 'blue'" stroke-width="1"></circle>
-              <text *ngIf="data.tooth.status === 'Implant'" x="2" y="12" [attr.fill]="data.tooth.planned ? 'red' : 'blue'" style="font-size: 6px; font-weight: bold;">IMP</text>
+              <circle *ngIf="data.tooth.status === 'Crown'" cx="10" cy="10" r="12" fill="none" [attr.stroke]="data.tooth.planned ? 'blue' : 'red'" stroke-width="1"></circle>
+              <text *ngIf="data.tooth.status === 'Implant'" x="2" y="12" [attr.fill]="data.tooth.planned ? 'blue' : 'red'" style="font-size: 6px; font-weight: bold;">IMP</text>
 
-              <line *ngIf="data.tooth.status === 'BridgeStart'" x1="10" y1="-5" x2="25" y2="-5" [attr.stroke]="data.tooth.planned ? 'red' : 'blue'" stroke-width="2"></line>
-              <line *ngIf="data.tooth.status === 'BridgeIntermediate'" x1="-5" y1="-5" x2="25" y2="-5" [attr.stroke]="data.tooth.planned ? 'red' : 'blue'" stroke-width="2"></line>
-              <line *ngIf="data.tooth.status === 'BridgeEnd'" x1="-5" y1="-5" x2="10" y2="-5" [attr.stroke]="data.tooth.planned ? 'red' : 'blue'" stroke-width="2"></line>
+              <line *ngIf="data.tooth.status === 'BridgeStart'" x1="10" y1="-5" x2="25" y2="-5" [attr.stroke]="data.tooth.planned ? 'blue' : 'red'" stroke-width="2"></line>
+              <line *ngIf="data.tooth.status === 'BridgeIntermediate'" x1="-5" y1="-5" x2="25" y2="-5" [attr.stroke]="data.tooth.planned ? 'blue' : 'red'" stroke-width="2"></line>
+              <line *ngIf="data.tooth.status === 'BridgeEnd'" x1="-5" y1="-5" x2="10" y2="-5" [attr.stroke]="data.tooth.planned ? 'blue' : 'red'" stroke-width="2"></line>
             </g>
           </svg>
         </div>
@@ -62,8 +62,8 @@ import { switchMap } from 'rxjs/operators';
 
           <div>
             <mat-radio-group [(ngModel)]="data.tooth.planned" style="display: flex; flex-direction: column; gap: 8px;">
-              <mat-radio-button [value]="false">Existing (Blue)</mat-radio-button>
-              <mat-radio-button [value]="true">Planned (Red)</mat-radio-button>
+              <mat-radio-button [value]="false">Existing (Red)</mat-radio-button>
+              <mat-radio-button [value]="true">Planned (Blue)</mat-radio-button>
             </mat-radio-group>
           </div>
         </div>
@@ -106,7 +106,7 @@ export class ToothEditDialog implements OnInit {
     if (!this.data.tooth.faces) return 'white';
     const face = this.data.tooth.faces.find(f => f.faceName === faceName);
     if (face && face.filled) {
-      return this.data.tooth.planned || face.planned ? 'red' : 'blue';
+      return this.data.tooth.planned || face.planned ? 'blue' : 'red';
     }
     return 'white';
   }

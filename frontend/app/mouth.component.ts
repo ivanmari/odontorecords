@@ -181,9 +181,9 @@ export class Mouth
 	getToothColor(toothId: number): string {
 		let tooth: Tooth = this.getTooth(toothId);
 		if (tooth && tooth.planned) {
-			return 'red';
+			return 'blue';
 		}
-		return 'blue';
+		return 'red';
 	}
 		
 	getFaceColor(toothNum: number, faceToPaint: string): string
@@ -200,7 +200,7 @@ export class Mouth
 				if(faceToPaint === face["faceName"])
 				{
 					if (face["filled"]) {
-						return (tooth.planned || face.planned) ? 'red' : 'blue';
+						return (tooth.planned || face.planned) ? 'blue' : 'red';
 					}
 					color = face["color"] || "white";
 				}
