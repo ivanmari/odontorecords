@@ -31,6 +31,7 @@ import { MatRadioModule } from '@angular/material/radio';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
 import { MatTableModule } from '@angular/material/table';
+import { InventoryListComponent } from './inventory-list.component';
 
 // Layout Directives
 @Directive({
@@ -96,7 +97,8 @@ export class FlexDirective {
     Mouth,
     ToothEditDialog,
     FlexDirective,
-    LayoutDirective
+    LayoutDirective,
+    InventoryListComponent
   ],
   providers: [
     { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true }

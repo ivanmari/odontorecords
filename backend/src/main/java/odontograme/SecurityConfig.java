@@ -67,6 +67,8 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.POST, "/patients").hasRole("ADMIN")
                 .requestMatchers(HttpMethod.PUT, "/patients/**").hasRole("ADMIN")
                 .requestMatchers(HttpMethod.PATCH, "/patients/**").hasRole("ADMIN")
+                .requestMatchers(HttpMethod.GET, "/inventory/**").hasRole("USER")
+                .requestMatchers(HttpMethod.POST, "/inventory/**").hasRole("ADMIN")
                 .anyRequest().authenticated()
             )
             .csrf(AbstractHttpConfigurer::disable);
