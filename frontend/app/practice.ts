@@ -6,5 +6,5 @@ export class Practice
 	price: number;
 	comments: string;
 	done: boolean;
+	affectedPieces: string;
 }
-
