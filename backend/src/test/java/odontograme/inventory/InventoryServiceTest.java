@@ -29,12 +29,17 @@ public class InventoryServiceTest {
     private PracticeService practiceService;
     private AccountService accountService;
 
+    @Mock
+    private odontograme.repository.ChargeRepository chargeRepository;
+    @Mock
+    private odontograme.repository.InstallmentRepository installmentRepository;
+
     @BeforeEach
     public void setup() {
         MockitoAnnotations.openMocks(this);
         inventoryService = new InventoryServiceImpl(dentalSupplyRepository);
-        practiceService = new PracticeServiceImpl(practiceRepository, inventoryService);
-        accountService = new AccountServiceImpl(null, null); // repositories not needed for cost calculation
+        accountService = new AccountServiceImpl(chargeRepository, installmentRepository);
+        practiceService = new PracticeServiceImpl(practiceRepository, inventoryService, accountService);
     }
 
     @Test
@@ -65,6 +70,7 @@ public class InventoryServiceTest {
         Practice practice = new Practice(Practice.Code.FillingBack, Instant.now(), 100);
         practice.setUsedSupplies(Collections.singletonList(usedResin));
         practice.setDone(true);
+        when(practiceRepository.save(any(Practice.class))).thenReturn(practice);
 
         practiceService.addPractice(practice);
 

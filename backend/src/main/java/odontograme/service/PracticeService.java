@@ -15,6 +15,6 @@ public interface PracticeService {
     void deletePracticeById(String practiceId);
     void updatePractice(Optional<Practice> practice);
 
-
+    Page<Practice> findByPatientId(String patientId, Pageable pageable);
 
 }
