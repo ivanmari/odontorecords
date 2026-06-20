@@ -1,7 +1,5 @@
 package odontograme.bookkeeping;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.PersistenceConstructor;
@@ -16,21 +14,31 @@ public class Installment {
     private ObjectId id;
     private String patientId;
     private ObjectId chargeId;
+    private ObjectId practiceId;
     private Date paymentDay;
     private int amount;
 
-    //REST response
-    //TODO Remove this annotation as Java 8 support metadata for arguments in bytecode
-    //Remember to add dependency parameter-module
-    @JsonCreator
-    public Installment(@JsonProperty("chargeId")String chargeId, @JsonProperty("paymentDay")Date paymentDay, @JsonProperty("amount")int amount){
-        this(new ObjectId(chargeId), paymentDay, amount);
+    public Installment() {
+        this.id = new ObjectId();
+    }
+
+    public Installment(String chargeId, Date paymentDay, int amount) {
+        this(chargeId, null, paymentDay, amount);
+    }
+
+    public Installment(String chargeId, String practiceId, Date paymentDay, int amount) {
+        this(new ObjectId(chargeId), practiceId != null ? new ObjectId(practiceId) : null, paymentDay, amount);
+    }
+
+    public Installment(ObjectId chargeId, Date paymentDay, int amount) {
+        this(chargeId, null, paymentDay, amount);
     }
 
     @PersistenceConstructor
-    public Installment(ObjectId chargeId, Date paymentDay, int amount) {
+    public Installment(ObjectId chargeId, ObjectId practiceId, Date paymentDay, int amount) {
         this.id = new ObjectId();
         this.chargeId = chargeId;
+        this.practiceId = practiceId;
         this.paymentDay = paymentDay;
         this.amount = amount;
     }
@@ -51,11 +59,43 @@ public class Installment {
         return chargeId;
     }
 
+    public void setChargeId(ObjectId chargeId) {
+        this.chargeId = chargeId;
+    }
+
+    public void setChargeId(String chargeId) {
+        if (chargeId != null && !chargeId.isEmpty()) {
+            this.chargeId = new ObjectId(chargeId);
+        }
+    }
+
+    public ObjectId getPracticeId() {
+        return practiceId;
+    }
+
+    public void setPracticeId(ObjectId practiceId) {
+        this.practiceId = practiceId;
+    }
+
+    public void setPracticeId(String practiceId) {
+        if (practiceId != null && !practiceId.isEmpty()) {
+            this.practiceId = new ObjectId(practiceId);
+        }
+    }
+
     public Date getPaymentDay() {
         return paymentDay;
     }
 
+    public void setPaymentDay(Date paymentDay) {
+        this.paymentDay = paymentDay;
+    }
+
     public int getAmount() {
         return amount;
+    }
+
+    public void setAmount(int amount) {
+        this.amount = amount;
     }
 }

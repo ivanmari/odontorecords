@@ -1,4 +1,8 @@
 export class Installment {
-	id: string;
+    id: string;
+    patientId: string;
+    chargeId: string;
+    practiceId: string;
+    paymentDay: any;
+    amount: number;
 }
-
