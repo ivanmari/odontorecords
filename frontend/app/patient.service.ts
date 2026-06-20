@@ -155,6 +155,46 @@ export class PatientService {
       );
   }
 
+  public getCharges(patientId: string): Observable<Charge[]> {
+    return this.http.get<any>(this.baseUrl + this.patientUrl + "/" + patientId + "/account/charges")
+      .pipe(
+        map(response => response.content || response),
+        catchError(this.handleError)
+      );
+  }
+
+  public getInstallments(patientId: string): Observable<Installment[]> {
+    return this.http.get<any>(this.baseUrl + this.patientUrl + "/" + patientId + "/account/installments")
+      .pipe(
+        map(response => response.content || response),
+        catchError(this.handleError)
+      );
+  }
+
+  public addCharge(patientId: string, charge: Partial<Charge>): Observable<boolean> {
+    return this.http.post(this.baseUrl + this.patientUrl + "/" + patientId + "/account/charges", charge, { observe: 'response' })
+      .pipe(
+        map(res => res.ok),
+        catchError(this.handleError)
+      );
+  }
+
+  public addInstallment(patientId: string, installment: Partial<Installment>): Observable<boolean> {
+    return this.http.post(this.baseUrl + this.patientUrl + "/" + patientId + "/account/installments", installment, { observe: 'response' })
+      .pipe(
+        map(res => res.ok),
+        catchError(this.handleError)
+      );
+  }
+
+  public getBalance(patientId: string): Observable<number> {
+    return this.http.get<any>(this.baseUrl + this.patientUrl + "/" + patientId + "/balance")
+      .pipe(
+        map(res => res.balance),
+        catchError(this.handleError)
+      );
+  }
+
   private handleError(error: any) {
     console.error("An error occurred", error);
     let errMsg = (error.message) ? error.message :

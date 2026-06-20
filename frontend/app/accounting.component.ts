@@ -1,10 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { PatientService } from './patient.service';
 import { PatientBasicInfo } from './patientbasic';
-import { HttpClient } from '@angular/common/http';
 import { Charge } from './charge';
 import { Installment } from './installment';
-import { map } from 'rxjs/operators';
 
 @Component({
   selector: 'accounting-module',
@@ -92,36 +90,48 @@ import { map } from 'rxjs/operators';
 
               <mat-tabs>
                 <mat-tab label="Charges">
-                  <table mat-table [dataSource]="charges" class="full-width">
-                    <ng-container matColumnDef="date">
-                      <th mat-header-cell *matHeaderCellDef> Date </th>
-                      <td mat-cell *matCellDef="let c"> {{c.deliveryDate | date}} </td>
-                    </ng-container>
-                    <ng-container matColumnDef="details">
-                      <th mat-header-cell *matHeaderCellDef> Details </th>
-                      <td mat-cell *matCellDef="let c"> {{c.details}} </td>
-                    </ng-container>
-                    <ng-container matColumnDef="amount">
-                      <th mat-header-cell *matHeaderCellDef> Amount </th>
-                      <td mat-cell *matCellDef="let c"> {{c.charge}} </td>
-                    </ng-container>
-                    <tr mat-header-row *matHeaderRowDef="['date', 'details', 'amount']"></tr>
-                    <tr mat-row *matRowDef="let row; columns: ['date', 'details', 'amount'];"></tr>
-                  </table>
+                  <div class="history-list">
+                    <table class="history-table">
+                      <thead>
+                        <tr>
+                          <th>Date</th>
+                          <th>Details</th>
+                          <th>Amount</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr *ngFor="let c of charges">
+                          <td>{{c.deliveryDate | date}}</td>
+                          <td>{{c.details}}</td>
+                          <td>{{c.charge}}</td>
+                        </tr>
+                        <tr *ngIf="charges.length === 0">
+                          <td colspan="3" class="empty-msg">No charges found</td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
                 </mat-tab>
                 <mat-tab label="Payments">
-                  <table mat-table [dataSource]="installments" class="full-width">
-                    <ng-container matColumnDef="date">
-                      <th mat-header-cell *matHeaderCellDef> Date </th>
-                      <td mat-cell *matCellDef="let i"> {{i.paymentDay | date}} </td>
-                    </ng-container>
-                    <ng-container matColumnDef="amount">
-                      <th mat-header-cell *matHeaderCellDef> Amount </th>
-                      <td mat-cell *matCellDef="let i"> {{i.amount}} </td>
-                    </ng-container>
-                    <tr mat-header-row *matHeaderRowDef="['date', 'amount']"></tr>
-                    <tr mat-row *matRowDef="let row; columns: ['date', 'amount'];"></tr>
-                  </table>
+                  <div class="history-list">
+                    <table class="history-table">
+                      <thead>
+                        <tr>
+                          <th>Date</th>
+                          <th>Amount</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr *ngFor="let i of installments">
+                          <td>{{i.paymentDay | date}}</td>
+                          <td>{{i.amount}}</td>
+                        </tr>
+                        <tr *ngIf="installments.length === 0">
+                          <td colspan="2" class="empty-msg">No payments found</td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
                 </mat-tab>
               </mat-tabs>
             </mat-card-content>
@@ -138,7 +148,6 @@ import { map } from 'rxjs/operators';
     .patient-list mat-list-item { cursor: pointer; }
     .balance { font-size: 0.8em; }
     .negative { color: red; }
-    .full-width { width: 100%; }
     .actions { margin-left: auto; display: flex; gap: 8px; align-items: center; }
     .form-container {
       padding: 20px;
@@ -148,6 +157,11 @@ import { map } from 'rxjs/operators';
     }
     .form-actions { margin-top: 10px; display: flex; justify-content: flex-end; gap: 10px; }
     .main-content { gap: 20px; }
+    .history-list { margin-top: 10px; }
+    .history-table { width: 100%; border-collapse: collapse; }
+    .history-table th, .history-table td { padding: 12px; text-align: left; border-bottom: 1px solid #ddd; }
+    .history-table th { background-color: #f8f9fa; }
+    .empty-msg { text-align: center; color: #666; font-style: italic; }
   `]
 })
 export class AccountingComponent implements OnInit {
@@ -163,7 +177,7 @@ export class AccountingComponent implements OnInit {
   newCharge: Partial<Charge> = { charge: 0, details: '', deliveryDate: new Date() };
   newInstallment: Partial<Installment> = { amount: 0, paymentDay: new Date() };
 
-  constructor(private patientService: PatientService, private http: HttpClient) {}
+  constructor(private patientService: PatientService) {}
 
   ngOnInit() {}
 
@@ -185,12 +199,10 @@ export class AccountingComponent implements OnInit {
   }
 
   loadHistory() {
-    this.http.get<any>('/patient/' + this.selectedPatientId + '/account/charges')
-      .pipe(map(data => data.content || data))
+    this.patientService.getCharges(this.selectedPatientId)
       .subscribe(data => this.charges = data);
 
-    this.http.get<any>('/patient/' + this.selectedPatientId + '/account/installments')
-      .pipe(map(data => data.content || data))
+    this.patientService.getInstallments(this.selectedPatientId)
       .subscribe(data => this.installments = data);
   }
 
@@ -205,7 +217,7 @@ export class AccountingComponent implements OnInit {
   }
 
   addCharge() {
-    this.http.post('/patient/' + this.selectedPatientId + '/account/charges', this.newCharge)
+    this.patientService.addCharge(this.selectedPatientId, this.newCharge)
       .subscribe(() => {
         this.showAddCharge = false;
         this.newCharge = { charge: 0, details: '', deliveryDate: new Date() };
@@ -215,7 +227,7 @@ export class AccountingComponent implements OnInit {
   }
 
   addInstallment() {
-    this.http.post('/patient/' + this.selectedPatientId + '/account/installments', this.newInstallment)
+    this.patientService.addInstallment(this.selectedPatientId, this.newInstallment)
       .subscribe(() => {
         this.showAddInstallment = false;
         this.newInstallment = { amount: 0, paymentDay: new Date() };
@@ -227,8 +239,8 @@ export class AccountingComponent implements OnInit {
   refreshPatientBalance() {
     const patient = this.patients.find(p => p.id === this.selectedPatientId);
     if (patient) {
-      this.http.get<any>('/patient/' + this.selectedPatientId + '/balance')
-        .subscribe(data => (patient as any).balance = data.balance);
+      this.patientService.getBalance(this.selectedPatientId)
+        .subscribe(balance => (patient as any).balance = balance);
     }
   }
 }
