@@ -72,6 +72,15 @@ import { Installment } from './installment';
                 <h3>Add Payment (Installment)</h3>
                 <div layout="column">
                   <mat-form-field>
+                    <mat-label>Practice (Optional)</mat-label>
+                    <mat-select [(ngModel)]="newInstallment.practiceId">
+                      <mat-option [value]="null">None</mat-option>
+                      <mat-option *ngFor="let p of practices" [value]="p.id">
+                        {{p.deliveryDate | date:'shortDate'}} - {{p.code}} ($ {{p.price}})
+                      </mat-option>
+                    </mat-select>
+                  </mat-form-field>
+                  <mat-form-field>
                     <mat-label>Amount</mat-label>
                     <input matInput type="number" [(ngModel)]="newInstallment.amount">
                   </mat-form-field>
@@ -171,6 +180,7 @@ export class AccountingComponent implements OnInit {
   selectedPatientName: string = '';
   charges: Charge[] = [];
   installments: Installment[] = [];
+  practices: any[] = [];
 
   showAddCharge = false;
   showAddInstallment = false;
@@ -205,6 +215,12 @@ export class AccountingComponent implements OnInit {
 
     this.patientService.getInstallments(this.selectedPatientId)
       .subscribe(data => this.installments = data);
+
+    this.patientService.getPatientPractices(this.selectedPatientId)
+      .subscribe(data => {
+        const content = (data as any).content || data;
+        this.practices = content.filter(p => p.done);
+      });
   }
 
   toggleAddCharge() {
@@ -228,6 +244,12 @@ export class AccountingComponent implements OnInit {
   }
 
   addInstallment() {
+    if (this.newInstallment.practiceId) {
+      const associatedCharge = this.charges.find(c => c.practiceId === this.newInstallment.practiceId);
+      if (associatedCharge) {
+        this.newInstallment.chargeId = associatedCharge.id;
+      }
+    }
     this.patientService.addInstallment(this.selectedPatientId, this.newInstallment)
       .subscribe(() => {
         this.showAddInstallment = false;

@@ -37,4 +37,9 @@ public class PracticeServicesMock implements PracticeService {
     public void updatePractice(Optional<Practice> practice) {
 
     }
+
+    @Override
+    public Page<Practice> findByPatientId(String patientId, Pageable pageable) {
+        return null;
+    }
 }
