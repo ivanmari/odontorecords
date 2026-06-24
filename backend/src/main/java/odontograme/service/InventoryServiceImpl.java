@@ -24,7 +24,21 @@ public class InventoryServiceImpl implements InventoryService {
             if (supply.getId() != null) {
                 Optional<DentalSupply> dbSupplyOpt = dentalSupplyRepository.findById(supply.getId());
                 dbSupplyOpt.ifPresent(dbSupply -> {
-                    dbSupply.setQuantity(dbSupply.getQuantity() - supply.getQuantity());
+                    int consumedUses = supply.getQuantity();
+                    int currentUses = dbSupply.getCurrentUses();
+
+                    currentUses -= consumedUses;
+
+                    while (currentUses <= 0 && dbSupply.getQuantity() > 0) {
+                        dbSupply.setQuantity(dbSupply.getQuantity() - 1);
+                        if (dbSupply.getQuantity() > 0) {
+                            currentUses += dbSupply.getUsesPerUnit();
+                        } else {
+                            currentUses = 0;
+                        }
+                    }
+
+                    dbSupply.setCurrentUses(currentUses);
                     dentalSupplyRepository.save(dbSupply);
                 });
             }
@@ -33,6 +47,11 @@ public class InventoryServiceImpl implements InventoryService {
 
     @Override
     public void addSupply(DentalSupply supply) {
+        if (supply.getId() == null || !dentalSupplyRepository.existsById(supply.getId())) {
+            if (supply.getCurrentUses() == 0 && supply.getQuantity() > 0) {
+                supply.setCurrentUses(supply.getUsesPerUnit());
+            }
+        }
         dentalSupplyRepository.save(supply);
     }
 

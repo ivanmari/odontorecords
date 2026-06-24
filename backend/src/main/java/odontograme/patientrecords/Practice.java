@@ -177,7 +177,12 @@ public class Practice {
     }
 
     public int getSuppliesCost() {
-        return usedSupplies.stream().mapToInt(s -> s.getPurchaseCost() * s.getQuantity()).sum();
+        return usedSupplies.stream().mapToInt(s -> {
+            if (s.getUsesPerUnit() > 0) {
+                return (s.getPurchaseCost() * s.getQuantity()) / s.getUsesPerUnit();
+            }
+            return s.getPurchaseCost() * s.getQuantity();
+        }).sum();
     }
 
     public Boolean isPreexisting(){

@@ -42,6 +42,11 @@ import { MatSnackBar } from '@angular/material/snack-bar';
               <input matInput type="number" [(ngModel)]="newSupply.purchaseCost">
             </mat-form-field>
 
+            <mat-form-field appearance="outline">
+              <mat-label>Uses per Unit</mat-label>
+              <input matInput type="number" [(ngModel)]="newSupply.usesPerUnit">
+            </mat-form-field>
+
             <button mat-raised-button color="accent" (click)="saveNewSupply()">Save</button>
           </div>
 
@@ -73,6 +78,23 @@ import { MatSnackBar } from '@angular/material/snack-bar';
                 <mat-form-field *ngIf="editingSupplyId === supply.id" class="small-input">
                   <input matInput type="number" [(ngModel)]="supply.purchaseCost">
                 </mat-form-field>
+              </td>
+            </ng-container>
+
+            <ng-container matColumnDef="usesPerUnit">
+              <th mat-header-cell *matHeaderCellDef> Uses/Unit </th>
+              <td mat-cell *matCellDef="let supply">
+                <div *ngIf="editingSupplyId !== supply.id">{{supply.usesPerUnit}}</div>
+                <mat-form-field *ngIf="editingSupplyId === supply.id" class="small-input">
+                  <input matInput type="number" [(ngModel)]="supply.usesPerUnit">
+                </mat-form-field>
+              </td>
+            </ng-container>
+
+            <ng-container matColumnDef="currentUses">
+              <th mat-header-cell *matHeaderCellDef> Remaining Uses </th>
+              <td mat-cell *matCellDef="let supply">
+                {{supply.currentUses}}
               </td>
             </ng-container>
 
@@ -125,7 +147,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 })
 export class InventoryListComponent implements OnInit {
   supplies: DentalSupply[] = [];
-  displayedColumns: string[] = ['name', 'category', 'quantity', 'purchaseCost', 'actions'];
+  displayedColumns: string[] = ['name', 'category', 'quantity', 'purchaseCost', 'usesPerUnit', 'currentUses', 'actions'];
   categories = Object.values(DentalSupplyCategory);
 
   showAddForm = false;
@@ -133,7 +155,8 @@ export class InventoryListComponent implements OnInit {
     name: '',
     category: DentalSupplyCategory.Resin,
     quantity: 0,
-    purchaseCost: 0
+    purchaseCost: 0,
+    usesPerUnit: 1
   };
 
   editingSupplyId: string | null = null;
@@ -158,7 +181,8 @@ export class InventoryListComponent implements OnInit {
         name: '',
         category: DentalSupplyCategory.Resin,
         quantity: 0,
-        purchaseCost: 0
+        purchaseCost: 0,
+        usesPerUnit: 1
       };
       this.loadSupplies();
     });

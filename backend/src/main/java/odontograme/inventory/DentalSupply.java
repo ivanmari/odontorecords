@@ -12,6 +12,8 @@ public class DentalSupply {
     private DentalSupplyCategory category;
     private int purchaseCost;
     private int quantity;
+    private int usesPerUnit = 1;
+    private int currentUses;
 
     public DentalSupply() {}
 
@@ -20,6 +22,16 @@ public class DentalSupply {
         this.category = category;
         this.purchaseCost = purchaseCost;
         this.quantity = quantity;
+        this.currentUses = usesPerUnit;
+    }
+
+    public DentalSupply(String name, DentalSupplyCategory category, int purchaseCost, int quantity, int usesPerUnit) {
+        this.name = name;
+        this.category = category;
+        this.purchaseCost = purchaseCost;
+        this.quantity = quantity;
+        this.usesPerUnit = usesPerUnit;
+        this.currentUses = usesPerUnit;
     }
 
     public String getId() {
@@ -60,5 +72,21 @@ public class DentalSupply {
 
     public void setQuantity(int quantity) {
         this.quantity = quantity;
+    }
+
+    public int getUsesPerUnit() {
+        return usesPerUnit;
+    }
+
+    public void setUsesPerUnit(int usesPerUnit) {
+        this.usesPerUnit = usesPerUnit;
+    }
+
+    public int getCurrentUses() {
+        return currentUses;
+    }
+
+    public void setCurrentUses(int currentUses) {
+        this.currentUses = currentUses;
     }
 }
