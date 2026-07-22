@@ -150,7 +150,7 @@ public class InventoryServiceTest {
         Practice practice = new Practice(Practice.Code.FillingBack, Instant.now(), 100);
         practice.setUsedSupplies(Collections.singletonList(usedResin));
 
-        assertThat(accountService.getPracticeCost(practice)).isEqualTo(100);
+        assertThat(accountService.getPracticeCost(practice)).isEqualTo(200);
     }
 
     @Test

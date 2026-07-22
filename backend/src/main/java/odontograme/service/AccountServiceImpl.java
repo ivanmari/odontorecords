@@ -36,7 +36,7 @@ public class AccountServiceImpl implements AccountService {
 
     @Override
     public int getPracticeCost(Practice practice) {
-        int totalCost = 0;
+        int totalCost = practice.getPrice();
         for (Practice.UsedSupply used : practice.getUsedSupplies()) {
             if (used.getDentalSupplyId() != null) {
                 Optional<DentalSupply> supplyOpt = dentalSupplyRepository.findById(used.getDentalSupplyId());
