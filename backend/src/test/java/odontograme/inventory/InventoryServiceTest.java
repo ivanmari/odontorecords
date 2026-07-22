@@ -38,7 +38,7 @@ public class InventoryServiceTest {
     public void setup() {
         MockitoAnnotations.openMocks(this);
         inventoryService = new InventoryServiceImpl(dentalSupplyRepository);
-        accountService = new AccountServiceImpl(chargeRepository, installmentRepository);
+        accountService = new AccountServiceImpl(chargeRepository, installmentRepository, dentalSupplyRepository);
         practiceService = new PracticeServiceImpl(practiceRepository, inventoryService, accountService);
     }
 
@@ -48,8 +48,7 @@ public class InventoryServiceTest {
         resinInDb.setId("resin123");
         resinInDb.setCurrentUses(10);
 
-        DentalSupply usedResin = new DentalSupply("Test Resin", DentalSupplyCategory.Resin, 1000, 3);
-        usedResin.setId("resin123");
+        Practice.UsedSupply usedResin = new Practice.UsedSupply("resin123", 3);
 
         when(dentalSupplyRepository.findById("resin123")).thenReturn(Optional.of(resinInDb));
 
@@ -66,8 +65,7 @@ public class InventoryServiceTest {
         resinInDb.setId("resin123");
         resinInDb.setCurrentUses(2);
 
-        DentalSupply usedResin = new DentalSupply("Test Resin", DentalSupplyCategory.Resin, 1000, 3);
-        usedResin.setId("resin123");
+        Practice.UsedSupply usedResin = new Practice.UsedSupply("resin123", 3);
 
         when(dentalSupplyRepository.findById("resin123")).thenReturn(Optional.of(resinInDb));
 
@@ -84,8 +82,7 @@ public class InventoryServiceTest {
         resinInDb.setId("resin123");
         resinInDb.setCurrentUses(2);
 
-        DentalSupply usedResin = new DentalSupply("Test Resin", DentalSupplyCategory.Resin, 1000, 3);
-        usedResin.setId("resin123");
+        Practice.UsedSupply usedResin = new Practice.UsedSupply("resin123", 3);
 
         when(dentalSupplyRepository.findById("resin123")).thenReturn(Optional.of(resinInDb));
 
@@ -103,8 +100,7 @@ public class InventoryServiceTest {
         resinInDb.setCurrentUses(1);
         when(dentalSupplyRepository.findById("resin123")).thenReturn(Optional.of(resinInDb));
 
-        DentalSupply usedResin = new DentalSupply("Test Resin", DentalSupplyCategory.Resin, 1000, 1);
-        usedResin.setId("resin123");
+        Practice.UsedSupply usedResin = new Practice.UsedSupply("resin123", 1);
 
         Practice practice = new Practice(Practice.Code.FillingBack, Instant.now(), 100);
         practice.setUsedSupplies(Collections.singletonList(usedResin));
@@ -124,8 +120,7 @@ public class InventoryServiceTest {
         resinInDb.setId("resin123");
         when(dentalSupplyRepository.findById("resin123")).thenReturn(Optional.of(resinInDb));
 
-        DentalSupply usedResin = new DentalSupply("Test Resin", DentalSupplyCategory.Resin, 50, 1);
-        usedResin.setId("resin123");
+        Practice.UsedSupply usedResin = new Practice.UsedSupply("resin123", 1);
 
         Practice practice = new Practice(Practice.Code.FillingBack, null, 100);
         practice.setId(new org.bson.types.ObjectId().toString());
@@ -147,11 +142,14 @@ public class InventoryServiceTest {
 
     @Test
     public void testPracticeCostWithUses() {
-        DentalSupply resin = new DentalSupply("Test Resin", DentalSupplyCategory.Resin, 1000, 1, 10);
-        Practice practice = new Practice(Practice.Code.FillingBack, Instant.now(), 100);
-        practice.setUsedSupplies(Collections.singletonList(resin));
+        DentalSupply resinInDb = new DentalSupply("Test Resin", DentalSupplyCategory.Resin, 1000, 1, 10);
+        resinInDb.setId("resin123");
+        when(dentalSupplyRepository.findById("resin123")).thenReturn(Optional.of(resinInDb));
 
-        assertThat(practice.getSuppliesCost()).isEqualTo(100);
+        Practice.UsedSupply usedResin = new Practice.UsedSupply("resin123", 1);
+        Practice practice = new Practice(Practice.Code.FillingBack, Instant.now(), 100);
+        practice.setUsedSupplies(Collections.singletonList(usedResin));
+
         assertThat(accountService.getPracticeCost(practice)).isEqualTo(100);
     }
 

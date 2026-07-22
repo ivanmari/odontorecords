@@ -77,8 +77,36 @@ public class Practice {
     @Field("comments")
     private String comments;
 
+    public static class UsedSupply {
+        private String dentalSupplyId;
+        private int uses;
+
+        public UsedSupply() {}
+
+        public UsedSupply(String dentalSupplyId, int uses) {
+            this.dentalSupplyId = dentalSupplyId;
+            this.uses = uses;
+        }
+
+        public String getDentalSupplyId() {
+            return dentalSupplyId;
+        }
+
+        public void setDentalSupplyId(String dentalSupplyId) {
+            this.dentalSupplyId = dentalSupplyId;
+        }
+
+        public int getUses() {
+            return uses;
+        }
+
+        public void setUses(int uses) {
+            this.uses = uses;
+        }
+    }
+
     @Field("used_supplies")
-    private List<DentalSupply> usedSupplies = new ArrayList<>();
+    private List<UsedSupply> usedSupplies = new ArrayList<>();
 
     /*This flag indicates if the practice was done before being registered as a patient*/
     private Boolean preexisting;
@@ -168,21 +196,12 @@ public class Practice {
         this.comments = comments;
     }
 
-    public List<DentalSupply> getUsedSupplies() {
+    public List<UsedSupply> getUsedSupplies() {
         return usedSupplies;
     }
 
-    public void setUsedSupplies(List<DentalSupply> usedSupplies) {
+    public void setUsedSupplies(List<UsedSupply> usedSupplies) {
         this.usedSupplies = usedSupplies;
-    }
-
-    public int getSuppliesCost() {
-        return usedSupplies.stream().mapToInt(s -> {
-            if (s.getUsesPerUnit() > 0) {
-                return (s.getPurchaseCost() * s.getQuantity()) / s.getUsesPerUnit();
-            }
-            return s.getPurchaseCost() * s.getQuantity();
-        }).sum();
     }
 
     public Boolean isPreexisting(){

@@ -2,6 +2,7 @@ package odontograme.bookkeeping;
 
 import odontograme.repository.ChargeRepository;
 import odontograme.repository.ChargeRepositoryMock;
+import odontograme.repository.DentalSupplyRepository;
 import odontograme.repository.InstallmentRepository;
 import odontograme.repository.InstallmentRepositoryMock;
 import odontograme.service.AccountService;
@@ -14,6 +15,7 @@ import org.junit.jupiter.api.BeforeEach;
 import java.util.Date;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.mock;
 
 /**
  * Created by immari on 10/2/2016.
@@ -22,7 +24,8 @@ public class AccountServiceTests {
 
     ChargeRepository chargeRepository = new ChargeRepositoryMock();
     InstallmentRepository installmentRepository = new InstallmentRepositoryMock();
-    AccountService account = new AccountServiceImpl(chargeRepository, installmentRepository);
+    DentalSupplyRepository dentalSupplyRepository = mock(DentalSupplyRepository.class);
+    AccountService account = new AccountServiceImpl(chargeRepository, installmentRepository, dentalSupplyRepository);
 
     @BeforeAll
     static void initAll() {

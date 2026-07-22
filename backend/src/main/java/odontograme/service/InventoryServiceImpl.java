@@ -1,6 +1,7 @@
 package odontograme.service;
 
 import odontograme.inventory.DentalSupply;
+import odontograme.patientrecords.Practice;
 import odontograme.repository.DentalSupplyRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -19,12 +20,12 @@ public class InventoryServiceImpl implements InventoryService {
     }
 
     @Override
-    public void consumeSupplies(List<DentalSupply> supplies) {
-        for (DentalSupply supply : supplies) {
-            if (supply.getId() != null) {
-                Optional<DentalSupply> dbSupplyOpt = dentalSupplyRepository.findById(supply.getId());
+    public void consumeSupplies(List<Practice.UsedSupply> supplies) {
+        for (Practice.UsedSupply supply : supplies) {
+            if (supply.getDentalSupplyId() != null) {
+                Optional<DentalSupply> dbSupplyOpt = dentalSupplyRepository.findById(supply.getDentalSupplyId());
                 dbSupplyOpt.ifPresent(dbSupply -> {
-                    int consumedUses = supply.getQuantity();
+                    int consumedUses = supply.getUses();
                     int currentUses = dbSupply.getCurrentUses();
 
                     currentUses -= consumedUses;

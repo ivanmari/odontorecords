@@ -5,8 +5,10 @@ import odontograme.bookkeeping.Installment;
 import odontograme.bookkeeping.exceptions.InstallmentPresentException;
 import odontograme.bookkeeping.exceptions.ChargeIdNotFoundException;
 import odontograme.bookkeeping.exceptions.InstallmentIdNotFoundException;
+import odontograme.inventory.DentalSupply;
 import odontograme.patientrecords.Practice;
 import odontograme.repository.ChargeRepository;
+import odontograme.repository.DentalSupplyRepository;
 import odontograme.repository.InstallmentRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -23,16 +25,32 @@ public class AccountServiceImpl implements AccountService {
 
     private final ChargeRepository chargeRepository;
     private final InstallmentRepository installmentRepository;
+    private final DentalSupplyRepository dentalSupplyRepository;
 
     @Autowired
-    public AccountServiceImpl(ChargeRepository chargeRepository, InstallmentRepository installmentRepository) {
+    public AccountServiceImpl(ChargeRepository chargeRepository, InstallmentRepository installmentRepository, DentalSupplyRepository dentalSupplyRepository) {
         this.chargeRepository = chargeRepository;
         this.installmentRepository = installmentRepository;
+        this.dentalSupplyRepository = dentalSupplyRepository;
     }
 
     @Override
     public int getPracticeCost(Practice practice) {
-        return practice.getSuppliesCost();
+        int totalCost = 0;
+        for (Practice.UsedSupply used : practice.getUsedSupplies()) {
+            if (used.getDentalSupplyId() != null) {
+                Optional<DentalSupply> supplyOpt = dentalSupplyRepository.findById(used.getDentalSupplyId());
+                if (supplyOpt.isPresent()) {
+                    DentalSupply s = supplyOpt.get();
+                    if (s.getUsesPerUnit() > 0) {
+                        totalCost += (s.getPurchaseCost() * used.getUses()) / s.getUsesPerUnit();
+                    } else {
+                        totalCost += s.getPurchaseCost() * used.getUses();
+                    }
+                }
+            }
+        }
+        return totalCost;
     }
 
     @Override
