@@ -11,4 +11,6 @@ export interface DentalSupply {
     category: DentalSupplyCategory;
     purchaseCost: number;
     quantity: number;
+    usesPerUnit?: number;
+    currentUses?: number;
 }

@@ -2,6 +2,7 @@ package odontograme.inventory;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.mongodb.core.mapping.Field;
 
 @Document(collection = "dental_supplies")
 public class DentalSupply {
@@ -13,6 +14,12 @@ public class DentalSupply {
     private int purchaseCost;
     private int quantity;
 
+    @Field("uses_per_unit")
+    private int usesPerUnit = 1;
+
+    @Field("current_uses")
+    private int currentUses;
+
     public DentalSupply() {}
 
     public DentalSupply(String name, DentalSupplyCategory category, int purchaseCost, int quantity) {
@@ -20,6 +27,16 @@ public class DentalSupply {
         this.category = category;
         this.purchaseCost = purchaseCost;
         this.quantity = quantity;
+        this.currentUses = usesPerUnit;
+    }
+
+    public DentalSupply(String name, DentalSupplyCategory category, int purchaseCost, int quantity, int usesPerUnit) {
+        this.name = name;
+        this.category = category;
+        this.purchaseCost = purchaseCost;
+        this.quantity = quantity;
+        this.usesPerUnit = usesPerUnit;
+        this.currentUses = usesPerUnit;
     }
 
     public String getId() {
@@ -60,5 +77,21 @@ public class DentalSupply {
 
     public void setQuantity(int quantity) {
         this.quantity = quantity;
+    }
+
+    public int getUsesPerUnit() {
+        return usesPerUnit;
+    }
+
+    public void setUsesPerUnit(int usesPerUnit) {
+        this.usesPerUnit = usesPerUnit;
+    }
+
+    public int getCurrentUses() {
+        return currentUses;
+    }
+
+    public void setCurrentUses(int currentUses) {
+        this.currentUses = currentUses;
     }
 }
