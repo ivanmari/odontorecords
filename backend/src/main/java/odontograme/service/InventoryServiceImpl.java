@@ -1,6 +1,7 @@
 package odontograme.service;
 
 import odontograme.inventory.DentalSupply;
+import odontograme.patientrecords.Practice;
 import odontograme.repository.DentalSupplyRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -19,12 +20,26 @@ public class InventoryServiceImpl implements InventoryService {
     }
 
     @Override
-    public void consumeSupplies(List<DentalSupply> supplies) {
-        for (DentalSupply supply : supplies) {
-            if (supply.getId() != null) {
-                Optional<DentalSupply> dbSupplyOpt = dentalSupplyRepository.findById(supply.getId());
+    public void consumeSupplies(List<Practice.UsedSupply> supplies) {
+        for (Practice.UsedSupply supply : supplies) {
+            if (supply.getDentalSupplyId() != null) {
+                Optional<DentalSupply> dbSupplyOpt = dentalSupplyRepository.findById(supply.getDentalSupplyId());
                 dbSupplyOpt.ifPresent(dbSupply -> {
-                    dbSupply.setQuantity(dbSupply.getQuantity() - supply.getQuantity());
+                    int consumedUses = supply.getUses();
+                    int currentUses = dbSupply.getCurrentUses();
+
+                    currentUses -= consumedUses;
+
+                    while (currentUses <= 0 && dbSupply.getQuantity() > 0) {
+                        dbSupply.setQuantity(dbSupply.getQuantity() - 1);
+                        if (dbSupply.getQuantity() > 0) {
+                            currentUses += dbSupply.getUsesPerUnit();
+                        } else {
+                            currentUses = 0;
+                        }
+                    }
+
+                    dbSupply.setCurrentUses(currentUses);
                     dentalSupplyRepository.save(dbSupply);
                 });
             }
@@ -33,6 +48,11 @@ public class InventoryServiceImpl implements InventoryService {
 
     @Override
     public void addSupply(DentalSupply supply) {
+        if (supply.getId() == null || !dentalSupplyRepository.existsById(supply.getId())) {
+            if (supply.getCurrentUses() == 0 && supply.getQuantity() > 0) {
+                supply.setCurrentUses(supply.getUsesPerUnit());
+            }
+        }
         dentalSupplyRepository.save(supply);
     }
 
