@@ -13,6 +13,8 @@ public class DentalSupply {
     private DentalSupplyCategory category;
     private int purchaseCost;
     private int quantity;
+    private int usesPerUnit = 1;
+    private int currentUses;
 
     @Field("uses_per_unit")
     private int usesPerUnit = 1;
