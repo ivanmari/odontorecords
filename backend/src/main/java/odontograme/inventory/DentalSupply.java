@@ -2,6 +2,7 @@ package odontograme.inventory;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.mongodb.core.mapping.Field;
 
 @Document(collection = "dental_supplies")
 public class DentalSupply {
@@ -13,6 +14,12 @@ public class DentalSupply {
     private int purchaseCost;
     private int quantity;
     private int usesPerUnit = 1;
+    private int currentUses;
+
+    @Field("uses_per_unit")
+    private int usesPerUnit = 1;
+
+    @Field("current_uses")
     private int currentUses;
 
     public DentalSupply() {}

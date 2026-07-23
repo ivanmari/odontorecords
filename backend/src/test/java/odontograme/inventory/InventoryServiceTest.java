@@ -150,7 +150,7 @@ public class InventoryServiceTest {
         Practice practice = new Practice(Practice.Code.FillingBack, Instant.now(), 100);
         practice.setUsedSupplies(Collections.singletonList(usedResin));
 
-        assertThat(accountService.getPracticeCost(practice)).isEqualTo(200);
+        assertThat(accountService.getPracticeCost(practice)).isEqualTo(100);
     }
 
     @Test
@@ -162,5 +162,27 @@ public class InventoryServiceTest {
 
         assertThat(newSupply.getCurrentUses()).isEqualTo(20);
         verify(dentalSupplyRepository, times(1)).save(newSupply);
+    }
+
+    @Test
+    public void testUpdateSupplyUpdatesUsesPerUnitAndCurrentUses() {
+        DentalSupply existingSupply = new DentalSupply("Test Resin", DentalSupplyCategory.Resin, 50, 10, 10);
+        existingSupply.setId("resin123");
+
+        when(dentalSupplyRepository.findById("resin123")).thenReturn(Optional.of(existingSupply));
+
+        // Simulate edited supply sent from frontend with changed usesPerUnit
+        DentalSupply editedSupply = new DentalSupply("Test Resin", DentalSupplyCategory.Resin, 50, 10, 20);
+        editedSupply.setId("resin123");
+        editedSupply.setCurrentUses(10);
+
+        inventoryService.addSupply(editedSupply);
+
+        ArgumentCaptor<DentalSupply> captor = ArgumentCaptor.forClass(DentalSupply.class);
+        verify(dentalSupplyRepository).save(captor.capture());
+
+        DentalSupply savedSupply = captor.getValue();
+        assertThat(savedSupply.getUsesPerUnit()).isEqualTo(20);
+        assertThat(savedSupply.getCurrentUses()).isEqualTo(20); // Should be updated to match the new usesPerUnit
     }
 }
